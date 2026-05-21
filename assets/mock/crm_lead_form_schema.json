@@ -1,0 +1,29 @@
+{
+  "model": "crm.lead",
+  "arch": "<form><sheet><group string=\"Contact Information\"><field name=\"partner_name\"/><field name=\"contact_name\"/><field name=\"phone\"/><field name=\"mobile\"/><field name=\"email_from\"/><field name=\"website\"/><field name=\"function\"/><field name=\"street\"/><field name=\"city\"/></group><group string=\"Marketing\"><field name=\"source_id\"/><field name=\"user_id\"/></group><group string=\"Opportunity\"><field name=\"name\"/><field name=\"stage_id\"/><field name=\"priority\"/><field name=\"expected_revenue\"/><field name=\"probability\"/><field name=\"date_deadline\"/></group><group string=\"Notes\"><field name=\"description\"/></group><group string=\"Other Information\"><field name=\"x_custom_note\"/></group></sheet></form>",
+  "fields": {
+    "name": { "type": "char", "string": "Opportunity" },
+    "partner_name": { "type": "char", "string": "Customer" },
+    "contact_name": { "type": "char", "string": "Contact Name" },
+    "phone": { "type": "char", "string": "Phone" },
+    "mobile": { "type": "char", "string": "Mobile" },
+    "email_from": { "type": "char", "string": "Email" },
+    "website": { "type": "char", "string": "Website" },
+    "function": { "type": "char", "string": "Job Position" },
+    "street": { "type": "char", "string": "Street" },
+    "city": { "type": "char", "string": "City" },
+    "source_id": { "type": "many2one", "string": "Source", "relation": "utm.source" },
+    "user_id": { "type": "many2one", "string": "Salesperson", "relation": "res.users" },
+    "stage_id": { "type": "many2one", "string": "Stage", "relation": "crm.stage" },
+    "priority": {
+      "type": "selection",
+      "string": "Priority",
+      "selection": [["0", "Low"], ["1", "Normal"], ["2", "High"], ["3", "Very High"]]
+    },
+    "expected_revenue": { "type": "monetary", "string": "Expected Revenue" },
+    "probability": { "type": "float", "string": "Probability" },
+    "date_deadline": { "type": "date", "string": "Expected Closing" },
+    "description": { "type": "html", "string": "Notes" },
+    "x_custom_note": { "type": "char", "string": "Custom Note (Studio)" }
+  }
+}

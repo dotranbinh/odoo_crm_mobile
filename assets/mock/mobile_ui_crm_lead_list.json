@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "model": "crm.lead",
+  "screen": "list",
+  "other_info_title": "Other Information",
+  "include_custom_fields": false,
+  "sections": [
+    {
+      "key": "card",
+      "title": "Card",
+      "sequence": 10,
+      "collapsed": false,
+      "fields": [
+        {"name": "name", "label": "Opportunity", "type": "char", "widget": "text", "list_primary": true, "sequence": 10},
+        {"name": "partner_name", "label": "Customer", "type": "char", "widget": "text", "list_subtitle": true, "sequence": 20},
+        {"name": "phone", "label": "Phone", "type": "char", "widget": "phone", "sequence": 30},
+        {"name": "stage_id", "label": "Stage", "type": "many2one", "widget": "stage", "sequence": 40},
+        {"name": "user_id", "label": "Salesperson", "type": "many2one", "widget": "many2one", "sequence": 50},
+        {"name": "create_date", "label": "Created", "type": "datetime", "widget": "datetime", "sequence": 60}
+      ]
+    }
+  ]
+}
