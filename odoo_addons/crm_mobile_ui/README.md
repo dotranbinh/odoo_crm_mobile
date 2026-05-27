@@ -45,3 +45,9 @@ Method: `get_mobile_layout(model_name, screen, company_id=None, lang=None)`
 ## Default data
 
 On install, creates active layouts for `crm.lead` list, detail, and form with sensible default fields.
+
+## Flutter integration (other models)
+
+End-to-end recipe for new models (list / detail / form, repository pattern, mock assets, limits): [../../docs/mobile-ui-screens.md](../../docs/mobile-ui-screens.md).
+
+Reference feature: `crm_app/lib/features/lead/`. Shared engine: `crm_app/lib/core/mobile_ui/`.

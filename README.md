@@ -118,6 +118,8 @@ Copy [odoo_addons/crm_mobile_ui](odoo_addons/crm_mobile_ui) into the server `add
 
 See [odoo_addons/crm_mobile_ui/README.md](odoo_addons/crm_mobile_ui/README.md) for model and API details.
 
+**Adding screens for other Odoo models:** step-by-step guide (Odoo layouts + Flutter feature wiring) — [docs/mobile-ui-screens.md](docs/mobile-ui-screens.md).
+
 ## Dynamic lead detail (fallback)
 
 Without mobile layout, lead detail uses `crm.lead.get_views`, parses form XML, then `read`s displayable fields. Custom `x_*` fields not in the arch appear under **Other Information**.
