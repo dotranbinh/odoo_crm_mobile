@@ -141,6 +141,7 @@ class MobileUiFieldSchema {
     this.listPrimary = false,
     this.listSubtitle = false,
     this.selection = const [],
+    this.relation,
     this.sequence = 10,
   });
 
@@ -155,6 +156,7 @@ class MobileUiFieldSchema {
   final bool listPrimary;
   final bool listSubtitle;
   final List<List<dynamic>> selection;
+  final String? relation;
   final int sequence;
 
   factory MobileUiFieldSchema.fromJson(Map<String, dynamic> json) {
@@ -168,6 +170,13 @@ class MobileUiFieldSchema {
       }
     }
 
+    final rawRelation = json['relation'];
+    final relation = rawRelation == null ||
+            rawRelation == false ||
+            rawRelation.toString().isEmpty
+        ? null
+        : rawRelation.toString();
+
     return MobileUiFieldSchema(
       name: json['name']?.toString() ?? '',
       label: json['label']?.toString() ?? json['name']?.toString() ?? '',
@@ -180,6 +189,7 @@ class MobileUiFieldSchema {
       listPrimary: json['list_primary'] == true,
       listSubtitle: json['list_subtitle'] == true,
       selection: selection,
+      relation: relation,
       sequence: json['sequence'] as int? ?? 10,
     );
   }

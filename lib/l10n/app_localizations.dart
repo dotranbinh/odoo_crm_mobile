@@ -670,6 +670,60 @@ abstract class AppLocalizations {
   /// **'Other Information'**
   String get otherInfo;
 
+  /// No description provided for @chatterAndNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Log notes & Chatter'**
+  String get chatterAndNotes;
+
+  /// No description provided for @logNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Log note'**
+  String get logNote;
+
+  /// No description provided for @logNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an internal log note…'**
+  String get logNoteHint;
+
+  /// No description provided for @addLogNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add log note'**
+  String get addLogNote;
+
+  /// No description provided for @sendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get sendMessage;
+
+  /// No description provided for @sendMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message…'**
+  String get sendMessageHint;
+
+  /// No description provided for @chatterMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get chatterMessage;
+
+  /// No description provided for @activityLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityLog;
+
+  /// No description provided for @noChatterMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet.'**
+  String get noChatterMessages;
+
   /// No description provided for @loading.
   ///
   /// In en, this message translates to:

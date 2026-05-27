@@ -4,6 +4,7 @@ import '../../../core/network/odoo_exception.dart';
 import '../../auth/application/auth_session_service.dart';
 import '../data/lead_repository.dart';
 import '../domain/lead_update_input.dart';
+import 'edit_lead_view_controller.dart';
 import 'lead_detail_controller.dart';
 import 'lead_list_controller.dart';
 
@@ -35,6 +36,7 @@ class EditLeadController extends Notifier<EditLeadState> {
             formValues: formValues,
           );
       ref.invalidate(leadDetailControllerProvider(leadId));
+      ref.invalidate(editLeadViewControllerProvider(leadId));
       await ref.read(leadListControllerProvider.notifier).refresh();
       state = const EditLeadState();
       return true;
@@ -66,6 +68,7 @@ class EditLeadController extends Notifier<EditLeadState> {
             input: input,
           );
       ref.invalidate(leadDetailControllerProvider(leadId));
+      ref.invalidate(editLeadViewControllerProvider(leadId));
       await ref.read(leadListControllerProvider.notifier).refresh();
       state = const EditLeadState();
       return true;

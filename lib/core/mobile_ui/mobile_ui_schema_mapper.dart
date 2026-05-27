@@ -16,6 +16,7 @@ abstract final class MobileUiSchemaMapper {
           name: f.name,
           type: f.type == 'float' ? 'monetary' : f.type,
           label: f.label,
+          relation: f.relation,
           selection: f.selection,
           readonly: f.readonly,
           required: f.required,

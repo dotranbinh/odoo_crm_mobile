@@ -37,6 +37,8 @@ class MobileUiConfigService {
       },
     );
 
+    MobileUiDebugLog.layoutRawRelations(result);
+
     final schema = _parseResult(result, model: model, screen: screen);
     final cached = _cache[cacheKey];
     if (cached != null && cached.version == schema.version) {
@@ -145,6 +147,7 @@ class MobileUiConfigService {
       useRealApi: AppConfig.useRealApi,
       summary: _summary(schema),
     );
+    MobileUiDebugLog.layoutFieldRelations(schema);
   }
 
   MobileUiLayoutSummary _summary(MobileUiLayoutSchema schema) {

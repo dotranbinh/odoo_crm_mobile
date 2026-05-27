@@ -11,9 +11,11 @@ import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/odoo_detail_section.dart';
 import '../../../l10n/app_localizations.dart';
+import '../application/lead_chatter_controller.dart';
 import '../application/lead_detail_controller.dart';
 import '../domain/lead.dart';
 import '../domain/lead_detail_view_data.dart';
+import 'widgets/lead_chatter_card.dart';
 import 'widgets/lead_priority_chip.dart';
 import 'widgets/lead_stage_badge.dart';
 
@@ -59,8 +61,10 @@ class _LeadDetailBody extends ConsumerWidget {
     final lead = view.summary;
 
     return RefreshIndicator(
-      onRefresh: () =>
-          ref.read(leadDetailControllerProvider(lead.id).notifier).refresh(),
+      onRefresh: () async {
+        await ref.read(leadDetailControllerProvider(lead.id).notifier).refresh();
+        await ref.read(leadChatterControllerProvider(lead.id).notifier).refresh();
+      },
       child: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -121,6 +125,7 @@ class _LeadDetailBody extends ConsumerWidget {
                   fieldDefinitions: view.schema.fields,
                   values: view.values,
                 ),
+              LeadChatterCard(leadId: lead.id),
               const SizedBox(height: AppSizes.xl),
             ],
           ),

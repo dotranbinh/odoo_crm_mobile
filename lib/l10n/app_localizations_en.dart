@@ -300,6 +300,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otherInfo => 'Other Information';
 
   @override
+  String get chatterAndNotes => 'Log notes & Chatter';
+
+  @override
+  String get logNote => 'Log note';
+
+  @override
+  String get logNoteHint => 'Add an internal log note…';
+
+  @override
+  String get addLogNote => 'Add log note';
+
+  @override
+  String get sendMessage => 'Send message';
+
+  @override
+  String get sendMessageHint => 'Write a message…';
+
+  @override
+  String get chatterMessage => 'Message';
+
+  @override
+  String get activityLog => 'Activity';
+
+  @override
+  String get noChatterMessages => 'No messages yet.';
+
+  @override
   String get loading => 'Loading...';
 
   @override

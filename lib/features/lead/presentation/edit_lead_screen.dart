@@ -6,7 +6,9 @@ import '../../../app/constants/app_config.dart';
 import '../../../app/constants/app_sizes.dart';
 import '../../../core/mobile_ui/mobile_ui_debug_log.dart';
 import '../../../core/mobile_ui/mobile_ui_form_builder.dart';
+import '../../../core/mobile_ui/mobile_ui_form_context.dart';
 import '../../../core/mobile_ui/mobile_ui_schema.dart';
+import '../../../core/odoo/odoo_relation_search_service.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/error_view.dart';
@@ -14,7 +16,7 @@ import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/primary_button.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/edit_lead_controller.dart';
-import '../application/lead_detail_controller.dart';
+import '../application/edit_lead_view_controller.dart';
 import '../data/lead_repository.dart';
 import '../domain/lead.dart';
 import '../domain/lead_update_input.dart';
@@ -260,7 +262,7 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final asyncLead = ref.watch(leadDetailControllerProvider(widget.leadId));
+    final asyncLead = ref.watch(editLeadViewControllerProvider(widget.leadId));
     final saveState = ref.watch(editLeadControllerProvider);
 
     if (!_layoutReady) {
@@ -280,7 +282,7 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
         body: ErrorView(
           message: e.toString(),
           onRetry: () => ref
-              .read(leadDetailControllerProvider(widget.leadId).notifier)
+              .read(editLeadViewControllerProvider(widget.leadId).notifier)
               .refresh(),
         ),
       ),
@@ -328,7 +330,20 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
                   layout: _formLayout!,
                   initialValues: _formValues,
                   controllers: _controllers,
-                  stageOptions: _stageOptions,
+                  formContext: MobileUiFormContext(
+                    searchMany2one: (field, query) {
+                      final relation = field.relation;
+                      if (relation == null || relation.isEmpty) {
+                        return Future.value([]);
+                      }
+                      return ref
+                          .read(odooRelationSearchServiceProvider)
+                          .search(relation: relation, query: query);
+                    },
+                    staticMany2oneOptions: {
+                      'stage_id': _stageOptions,
+                    },
+                  ),
                   onChanged: () => setState(() {}),
                 )
               else

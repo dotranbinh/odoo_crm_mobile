@@ -5,6 +5,7 @@ import '../../../core/mobile_ui/mobile_ui_config_service.dart';
 import '../../../core/mobile_ui/mobile_ui_debug_log.dart';
 import '../../../core/mobile_ui/mobile_ui_schema.dart';
 import '../../../core/mobile_ui/mobile_ui_schema_mapper.dart';
+import '../../../core/mobile_ui/mobile_ui_write_coercer.dart';
 import '../../../core/network/odoo_json_rpc_client.dart';
 import '../../../core/network/odoo_session.dart';
 import '../../../core/odoo/odoo_form_schema.dart';
@@ -78,6 +79,69 @@ class LeadRepository {
       return _fetchDetailViewRemote(id, otherInfoTitle: otherInfoTitle);
     }
     return _fetchDetailViewMock(id, otherInfoTitle: otherInfoTitle);
+  }
+
+  /// Edit screen: read Odoo values using **form** layout fields (not detail).
+  Future<LeadDetailViewData> fetchLeadEditViewData(
+    int id, {
+    String otherInfoTitle = 'Other Information',
+  }) async {
+    if (AppConfig.useRealApi) {
+      return _fetchEditViewRemote(id, otherInfoTitle: otherInfoTitle);
+    }
+    return _fetchEditViewMock(id, otherInfoTitle: otherInfoTitle);
+  }
+
+  Future<LeadDetailViewData> _fetchEditViewRemote(
+    int id, {
+    required String otherInfoTitle,
+  }) async {
+    final formLayout = await loadFormLayout();
+    final fieldNames = formLayout.isConfigured
+        ? formLayout.fieldNames
+        : (await _resolveDetailSchema(
+            fallbackOtherInfoTitle: otherInfoTitle,
+          ))
+            .readableFieldNames;
+    final values = await _recordReader.read(
+      model: crmLeadModel,
+      id: id,
+      fieldNames: fieldNames,
+    );
+    MobileUiDebugLog.detailValues(
+      leadId: id,
+      values: values,
+      expectedFields: fieldNames,
+    );
+    final schema = formLayout.isConfigured
+        ? MobileUiSchemaMapper.toOdooFormSchema(formLayout)
+        : await _resolveDetailSchema(fallbackOtherInfoTitle: otherInfoTitle);
+    return LeadDetailViewData(
+      summary: Lead.fromOdoo(values),
+      schema: schema,
+      values: values,
+    );
+  }
+
+  Future<LeadDetailViewData> _fetchEditViewMock(
+    int id, {
+    required String otherInfoTitle,
+  }) async {
+    final formLayout = await loadFormLayout();
+    final schema = formLayout.isConfigured
+        ? MobileUiSchemaMapper.toOdooFormSchema(formLayout)
+        : await _resolveDetailSchema(fallbackOtherInfoTitle: otherInfoTitle);
+    final values = await _mockLoader.loadRecordValues(id: id);
+    final merged = {...values};
+    final override = _mockOverrides[id];
+    if (override != null) {
+      merged.addAll(_leadToOdooMap(override));
+    }
+    return LeadDetailViewData(
+      summary: Lead.fromOdoo(merged),
+      schema: schema,
+      values: merged,
+    );
   }
 
   Future<LeadDetailViewData> _fetchDetailViewRemote(
@@ -370,33 +434,13 @@ class LeadRepository {
     for (final section in layout.sections) {
       for (final field in section.fields) {
         if (field.readonly) continue;
+        if (field.type == 'many2many' || field.type == 'one2many') continue;
         if (!formValues.containsKey(field.name)) continue;
-        values[field.name] = _coerceWriteValue(field, formValues[field.name]);
+        values[field.name] =
+            MobileUiWriteCoercer.coerce(field, formValues[field.name]);
       }
     }
     return values;
-  }
-
-  dynamic _coerceWriteValue(MobileUiFieldSchema field, dynamic value) {
-    if (value == null || (value is String && value.isEmpty)) {
-      return false;
-    }
-    if (field.type == 'many2one' || field.widget == 'stage') {
-      if (value is List && value.isNotEmpty) return value.first;
-      if (value is int) return value;
-      final parsed = int.tryParse(value.toString());
-      return parsed ?? false;
-    }
-    if (field.widget == 'number' ||
-        field.widget == 'currency' ||
-        field.type == 'float' ||
-        field.type == 'monetary') {
-      return double.tryParse(value.toString()) ?? false;
-    }
-    if (field.widget == 'boolean' || field.type == 'boolean') {
-      return value == true || value == 'true' || value == 1 || value == '1';
-    }
-    return value;
   }
 
   Map<String, dynamic> _flattenInput(LeadUpdateInput input) => {
