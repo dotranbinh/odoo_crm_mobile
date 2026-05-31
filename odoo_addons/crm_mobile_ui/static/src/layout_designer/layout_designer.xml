@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="crm_mobile_ui.LayoutDesigner">
+        <div class="o_mobile_ui_designer o_action">
+            <t t-if="state.loading">
+                <div class="o_mobile_ui_designer_loading">
+                    <i class="fa fa-spinner fa-spin"/> Loading layout…
+                </div>
+            </t>
+            <t t-else="">
+                <header class="o_mobile_ui_designer_header">
+                    <button type="button" class="btn btn-secondary" t-on-click="onBack">
+                        <i class="fa fa-arrow-left"/> Back
+                    </button>
+                    <div class="o_mobile_ui_designer_title">
+                        <h2 t-esc="state.layout.name"/>
+                        <span class="badge text-bg-info" t-esc="state.layout.model_name"/>
+                        <span class="badge text-bg-secondary" t-esc="state.layout.screen"/>
+                        <span class="text-muted ms-2">v<t t-esc="state.layout.version"/></span>
+                        <t t-if="state.dirty">
+                            <span class="badge text-bg-warning ms-2">Unsaved</span>
+                        </t>
+                    </div>
+                    <button type="button"
+                            class="btn btn-primary"
+                            t-att-disabled="state.saving"
+                            t-on-click="onSave">
+                        <i class="fa fa-save"/>
+                        <t t-if="state.saving"> Saving…</t>
+                        <t t-else=""> Save layout</t>
+                    </button>
+                </header>
+
+                <div class="o_mobile_ui_designer_body">
+                    <!-- Palette -->
+                    <aside class="o_mobile_ui_designer_palette">
+                        <h3>Fields</h3>
+                        <p class="text-muted o_mobile_ui_palette_hint">Drag into a section, or double-click to add to the first section.</p>
+                        <input type="search"
+                               class="form-control form-control-sm mb-2"
+                               placeholder="Search fields…"
+                               t-on-input="onPaletteQuery"/>
+                        <ul class="o_mobile_ui_palette_list">
+                            <t t-foreach="filteredPalette" t-as="field" t-key="field.name">
+                                <li class="o_mobile_ui_palette_item"
+                                    draggable="true"
+                                    t-on-dragstart="(ev) => this.onPaletteDragStart(ev, field)"
+                                    t-on-dragend="onDragEnd"
+                                    t-on-dblclick="() => this.addFieldFromPaletteClick(field)">
+                                    <span class="o_mobile_ui_palette_label" t-esc="field.string"/>
+                                    <code class="o_mobile_ui_palette_name" t-esc="field.name"/>
+                                </li>
+                            </t>
+                            <t t-if="!filteredPalette.length">
+                                <li class="text-muted o_mobile_ui_palette_empty">
+                                    No more fields available
+                                </li>
+                            </t>
+                        </ul>
+                    </aside>
+
+                    <!-- Canvas -->
+                    <main class="o_mobile_ui_designer_canvas">
+                        <div class="o_mobile_ui_phone">
+                            <div class="o_mobile_ui_phone_header">
+                                <span t-esc="state.layout.screen"/>
+                            </div>
+                            <div class="o_mobile_ui_phone_body">
+                                <t t-foreach="state.sections" t-as="section" t-key="section_index">
+                                    <div class="o_mobile_ui_section_card">
+                                        <div class="o_mobile_ui_section_head">
+                                            <input type="text"
+                                                   class="form-control form-control-sm o_mobile_ui_section_title"
+                                                   t-att-value="section.name"
+                                                   t-on-change="(ev) => this.updateSectionName(section_index, ev)"/>
+                                            <label class="o_mobile_ui_section_collapsed">
+                                                <input type="checkbox"
+                                                       t-att-checked="section.collapsed"
+                                                       t-on-change="(ev) => this.toggleSectionCollapsed(section_index, ev)"/>
+                                                Collapsed
+                                            </label>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-link text-danger"
+                                                    title="Remove section"
+                                                    t-on-click="() => this.removeSection(section_index)">
+                                                <i class="fa fa-trash"/>
+                                            </button>
+                                        </div>
+                                        <ul class="o_mobile_ui_field_list"
+                                            t-on-dragover.prevent="(ev) => this.onDragOverFieldList(ev, section_index)"
+                                            t-on-drop.prevent="(ev) => this.onDropOnSection(ev, section_index)"
+                                            t-on-dragleave="(ev) => this.onDragLeaveDropTarget(ev)">
+                                            <t t-foreach="section.fields" t-as="field" t-key="field.field_name">
+                                                <li class="o_mobile_ui_field_item"
+                                                    t-att-class="{ o_selected: isFieldSelected(section_index, field_index) }"
+                                                    draggable="true"
+                                                    t-on-dragstart="(ev) => this.onFieldDragStart(ev, section_index, field_index)"
+                                                    t-on-dragend="onDragEnd"
+                                                    t-on-dragover.prevent="(ev) => this.onDragOverFieldItem(ev, section_index, field_index)"
+                                                    t-on-drop.prevent="(ev) => this.onDropOnField(ev, section_index, field_index)"
+                                                    t-on-dragleave="(ev) => this.onDragLeaveDropTarget(ev)"
+                                                    t-on-click="() => this.selectField(section_index, field_index)">
+                                                    <i class="fa fa-bars o_mobile_ui_drag_handle"/>
+                                                    <span class="o_mobile_ui_field_label" t-esc="field.field_label"/>
+                                                    <code t-esc="field.field_name"/>
+                                                    <span class="badge text-bg-light" t-esc="field.widget"/>
+                                                </li>
+                                            </t>
+                                            <t t-if="!section.fields.length">
+                                                <li class="o_mobile_ui_drop_zone text-muted"
+                                                    t-on-dragover.prevent="(ev) => this.onDragOverDropZone(ev, section_index)"
+                                                    t-on-drop.prevent="(ev) => this.onDropOnSection(ev, section_index)"
+                                                    t-on-dragleave="(ev) => this.onDragLeaveDropTarget(ev)">
+                                                    Drop fields here
+                                                </li>
+                                            </t>
+                                        </ul>
+                                    </div>
+                                </t>
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm w-100 mt-2"
+                                        t-on-click="addSection">
+                                    <i class="fa fa-plus"/> Add section
+                                </button>
+                            </div>
+                        </div>
+                    </main>
+
+                    <!-- Properties -->
+                    <aside class="o_mobile_ui_designer_props">
+                        <h3>Properties</h3>
+                        <div class="o_mobile_ui_props_block">
+                            <h4>Layout</h4>
+                            <label class="form-check">
+                                <input type="checkbox" class="form-check-input"
+                                       t-att-checked="state.includeCustomFields"
+                                       t-on-change="(ev) => this.onLayoutCheck('includeCustomFields', ev)"/>
+                                Include custom fields (x_*)
+                            </label>
+                            <label class="form-label mt-2">Other info title</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   t-att-value="state.otherInfoTitle"
+                                   t-on-input="onOtherInfoTitle"/>
+                        </div>
+                        <t t-if="selectedField">
+                            <div class="o_mobile_ui_props_block">
+                                <h4 t-esc="selectedField.field_label"/>
+                                <code class="d-block mb-2" t-esc="selectedField.field_name"/>
+                                <label class="form-label">Label override</label>
+                                <input type="text" class="form-control form-control-sm mb-2"
+                                       t-att-value="selectedField.label"
+                                       t-on-input="(ev) => this.onPropInput('label', ev)"/>
+                                <label class="form-label">Widget</label>
+                                <select class="form-select form-select-sm mb-2"
+                                        t-att-value="selectedField.widget"
+                                        t-on-change="(ev) => this.updateSelected('widget', ev.target.value)">
+                                    <t t-foreach="state.widgetSelection" t-as="opt" t-key="opt.value">
+                                        <option t-att-value="opt.value" t-esc="opt.label"/>
+                                    </t>
+                                </select>
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           t-att-checked="selectedField.readonly"
+                                           t-on-change="(ev) => this.onPropCheck('readonly', ev)"/>
+                                    Readonly
+                                </label>
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           t-att-checked="selectedField.required"
+                                           t-on-change="(ev) => this.onPropCheck('required', ev)"/>
+                                    Required
+                                </label>
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           t-att-checked="selectedField.show_if_empty"
+                                           t-on-change="(ev) => this.onPropCheck('show_if_empty', ev)"/>
+                                    Show if empty
+                                </label>
+                                <label class="form-check">
+                                    <input type="checkbox" class="form-check-input"
+                                           t-att-checked="selectedField.copyable"
+                                           t-on-change="(ev) => this.onPropCheck('copyable', ev)"/>
+                                    Copyable
+                                </label>
+                                <t t-if="isListScreen">
+                                    <label class="form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                               t-att-checked="selectedField.list_primary"
+                                               t-on-change="(ev) => this.onPropCheck('list_primary', ev)"/>
+                                        List primary
+                                    </label>
+                                    <label class="form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                               t-att-checked="selectedField.list_subtitle"
+                                               t-on-change="(ev) => this.onPropCheck('list_subtitle', ev)"/>
+                                        List subtitle
+                                    </label>
+                                </t>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger mt-3 w-100"
+                                        t-on-click="removeSelectedField">
+                                    Remove field
+                                </button>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted">Select a field on the canvas to edit its properties.</p>
+                        </t>
+                    </aside>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

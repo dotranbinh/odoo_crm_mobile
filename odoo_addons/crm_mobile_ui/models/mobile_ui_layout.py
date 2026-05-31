@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 
 class MobileUiLayout(models.Model):
@@ -107,6 +108,166 @@ class MobileUiLayout(models.Model):
             'res_id': new_layout.id,
             'view_mode': 'form',
             'target': 'current',
+        }
+
+    def action_open_designer(self):
+        self.ensure_one()
+        self._check_designer_access()
+        return {
+            'type': 'ir.actions.client',
+            'name': _('Mobile Layout Designer'),
+            'tag': 'crm_mobile_ui.LayoutDesigner',
+            'target': 'current',
+            'params': {
+                'layout_id': self.id,
+            },
+        }
+
+    def _check_designer_access(self):
+        if not self.env.user.has_group('crm_mobile_ui.group_mobile_ui_manager'):
+            raise AccessError(_('Only Mobile UI managers can edit layouts in the designer.'))
+
+    @api.model
+    def get_designer_data(self, layout_id):
+        """Return layout tree + available fields for the visual designer."""
+        layout = self.browse(layout_id).exists()
+        if not layout:
+            raise UserError(_('Layout not found.'))
+        layout.check_access_rights('read')
+        layout.check_access_rule('read')
+
+        Model = self.env[layout.model_name]
+        fields_meta = Model.fields_get(
+            attributes=['string', 'type', 'selection', 'relation', 'readonly', 'required'],
+        )
+
+        used_names = set()
+        sections = []
+        for section in layout.section_ids.sorted('sequence'):
+            fields_payload = []
+            for field_line in section.field_ids.sorted('sequence'):
+                name = field_line.field_name
+                meta = fields_meta.get(name, {})
+                used_names.add(name)
+                fields_payload.append({
+                    'id': field_line.id,
+                    'field_name': name,
+                    'field_label': meta.get('string') or name,
+                    'field_type': meta.get('type') or 'char',
+                    'label': field_line.label or '',
+                    'sequence': field_line.sequence,
+                    'widget': field_line.widget,
+                    'readonly': field_line.readonly,
+                    'required': field_line.required,
+                    'show_if_empty': field_line.show_if_empty,
+                    'copyable': field_line.copyable,
+                    'list_primary': field_line.list_primary,
+                    'list_subtitle': field_line.list_subtitle,
+                })
+            sections.append({
+                'id': section.id,
+                'name': section.name,
+                'sequence': section.sequence,
+                'collapsed': section.collapsed,
+                'fields': fields_payload,
+            })
+
+        available = []
+        for fname, meta in sorted(
+            fields_meta.items(),
+            key=lambda item: (item[1].get('string') or item[0]).lower(),
+        ):
+            if fname in used_names:
+                continue
+            if not self._is_displayable_field(fname, meta):
+                continue
+            ftype = meta.get('type') or 'char'
+            available.append({
+                'name': fname,
+                'string': meta.get('string') or fname,
+                'type': ftype,
+                'relation': meta.get('relation') or False,
+                'suggested_widget': self._default_widget_for_type(ftype, fname),
+            })
+
+        field_model = self.env['mobile.ui.field']
+        widget_selection = [
+            {'value': value, 'label': label}
+            for value, label in field_model._fields['widget'].selection
+        ]
+
+        return {
+            'layout': {
+                'id': layout.id,
+                'name': layout.name,
+                'model_name': layout.model_name,
+                'screen': layout.screen,
+                'version': layout.version,
+                'active': layout.active,
+                'include_custom_fields': layout.include_custom_fields,
+                'other_info_title': layout.other_info_title or '',
+            },
+            'sections': sections,
+            'available_fields': available,
+            'widget_selection': widget_selection,
+            'preview': layout._build_mobile_layout_payload(),
+        }
+
+    @api.model
+    def save_designer_state(self, layout_id, state):
+        """Replace sections/fields from designer JSON and return updated preview."""
+        layout = self.browse(layout_id).exists()
+        if not layout:
+            raise UserError(_('Layout not found.'))
+        layout._check_designer_access()
+        layout.check_access_rights('write')
+
+        if not isinstance(state, dict):
+            raise UserError(_('Invalid designer state.'))
+
+        layout_vals = {}
+        if 'include_custom_fields' in state:
+            layout_vals['include_custom_fields'] = bool(state['include_custom_fields'])
+        if 'other_info_title' in state:
+            layout_vals['other_info_title'] = state['other_info_title'] or 'Other Information'
+        if layout_vals:
+            layout.write(layout_vals)
+
+        section_commands = [(5, 0, 0)]
+        for sec in sorted(state.get('sections') or [], key=lambda s: s.get('sequence', 10)):
+            name = (sec.get('name') or '').strip()
+            if not name:
+                continue
+            field_commands = []
+            for fld in sorted(sec.get('fields') or [], key=lambda f: f.get('sequence', 10)):
+                field_name = (fld.get('field_name') or '').strip()
+                if not field_name:
+                    continue
+                field_commands.append((0, 0, {
+                    'field_name': field_name,
+                    'label': fld.get('label') or False,
+                    'sequence': fld.get('sequence', 10),
+                    'widget': fld.get('widget') or 'text',
+                    'readonly': bool(fld.get('readonly')),
+                    'required': bool(fld.get('required')),
+                    'show_if_empty': bool(fld.get('show_if_empty')),
+                    'copyable': bool(fld.get('copyable')),
+                    'list_primary': bool(fld.get('list_primary')),
+                    'list_subtitle': bool(fld.get('list_subtitle')),
+                }))
+            section_commands.append((0, 0, {
+                'name': name,
+                'sequence': sec.get('sequence', 10),
+                'collapsed': bool(sec.get('collapsed')),
+                'field_ids': field_commands,
+            }))
+
+        layout.write({'section_ids': section_commands})
+        layout.invalidate_recordset(['version', 'section_ids'])
+
+        return {
+            'version': layout.version,
+            'preview': layout._build_mobile_layout_payload(),
         }
 
     @api.model

@@ -21,8 +21,10 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_open_designer" type="object" string="Open Designer"
+                            class="btn-primary"/>
                     <button name="action_set_active" type="object" string="Set Active"
-                            class="btn-primary" invisible="active"/>
+                            invisible="active"/>
                     <button name="action_duplicate" type="object" string="Duplicate"/>
                 </header>
                 <sheet>

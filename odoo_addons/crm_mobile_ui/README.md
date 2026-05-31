@@ -9,13 +9,18 @@ Configure Flutter CRM mobile screens: **list**, **detail**, and **form** per mod
 3. Install **CRM Mobile UI**.
 4. Open **CRM → Configuration → Mobile App UI** and adjust layouts.
 5. Assign **Mobile UI / Manager** to admins who edit layouts.
+6. On a layout form, click **Open Designer** for drag-and-drop editing (sections & fields).
 
 ## Mobile API
 
 Model: `mobile.ui.layout`  
 Method: `get_mobile_layout(model_name, screen, company_id=None, lang=None)`
 
-- `screen`: `list` | `detail` | `form`
+- `screen`: `list` | `detail` | `form` | `create`
+
+## Visual designer (OWL)
+
+Managers open **Open Designer** on a layout record. Drag fields from the palette into phone sections, reorder, and set widgets/flags in the properties panel. Saves via `save_designer_state(layout_id, state)`.
 - Returns `{ version, model, screen, sections[], ... }`
 - `version: 0` + empty `sections` → app falls back to `get_views` XML parser
 
