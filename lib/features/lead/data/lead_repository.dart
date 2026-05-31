@@ -6,10 +6,12 @@ import '../../../core/mobile_ui/mobile_ui_debug_log.dart';
 import '../../../core/mobile_ui/mobile_ui_schema.dart';
 import '../../../core/mobile_ui/mobile_ui_schema_mapper.dart';
 import '../../../core/mobile_ui/mobile_ui_write_coercer.dart';
+import '../../../core/network/odoo_exception.dart';
 import '../../../core/network/odoo_json_rpc_client.dart';
 import '../../../core/network/odoo_session.dart';
 import '../../../core/odoo/odoo_form_schema.dart';
 import '../../../core/odoo/odoo_form_schema_service.dart';
+import '../../../core/odoo/odoo_many2many_enricher.dart';
 import '../../../core/odoo/odoo_mock_schema_loader.dart';
 import '../../../core/odoo/odoo_record_reader.dart';
 import '../domain/lead.dart';
@@ -25,7 +27,7 @@ class LeadRepository {
     this._mockLoader,
     this._mobileUiConfig,
     this._sessionStore,
-  );
+  ) : _m2mEnricher = OdooMany2manyEnricher(_rpc);
 
   final OdooJsonRpcClient _rpc;
   final OdooFormSchemaService _schemaService;
@@ -33,6 +35,7 @@ class LeadRepository {
   final OdooMockSchemaLoader _mockLoader;
   final MobileUiConfigService _mobileUiConfig;
   final OdooSessionStore _sessionStore;
+  final OdooMany2manyEnricher _m2mEnricher;
 
   static const crmLeadModel = 'crm.lead';
 
@@ -65,6 +68,20 @@ class LeadRepository {
   Future<MobileUiLayoutSchema> loadListLayout() => _loadMobileLayout('list');
 
   Future<MobileUiLayoutSchema> loadFormLayout() => _loadMobileLayout('form');
+
+  /// Create screen layout; falls back to [form] when create is not configured.
+  Future<MobileUiLayoutSchema> loadCreateLayout() async {
+    final create = await _loadMobileLayout('create');
+    if (create.isConfigured) return create;
+    return _loadMobileLayout('form');
+  }
+
+  Future<Lead> createLeadFromValues(Map<String, dynamic> formValues) async {
+    if (AppConfig.useRealApi) {
+      return _createRemote(formValues);
+    }
+    return _createMock(formValues);
+  }
 
   Future<Lead> fetchLeadById(int id) async {
     final view = await fetchLeadDetailViewData(id);
@@ -103,11 +120,14 @@ class LeadRepository {
             fallbackOtherInfoTitle: otherInfoTitle,
           ))
             .readableFieldNames;
-    final values = await _recordReader.read(
+    var values = await _recordReader.read(
       model: crmLeadModel,
       id: id,
       fieldNames: fieldNames,
     );
+    if (formLayout.isConfigured) {
+      values = await _m2mEnricher.enrich(values, formLayout.allFields);
+    }
     MobileUiDebugLog.detailValues(
       leadId: id,
       values: values,
@@ -131,11 +151,16 @@ class LeadRepository {
     final schema = formLayout.isConfigured
         ? MobileUiSchemaMapper.toOdooFormSchema(formLayout)
         : await _resolveDetailSchema(fallbackOtherInfoTitle: otherInfoTitle);
-    final values = await _mockLoader.loadRecordValues(id: id);
+    var values = await _mockLoader.loadRecordValues(id: id);
     final merged = {...values};
     final override = _mockOverrides[id];
     if (override != null) {
       merged.addAll(_leadToOdooMap(override));
+    }
+    if (formLayout.isConfigured) {
+      merged.addAll(
+        await _m2mEnricher.enrich(merged, formLayout.allFields),
+      );
     }
     return LeadDetailViewData(
       summary: Lead.fromOdoo(merged),
@@ -152,11 +177,15 @@ class LeadRepository {
       fallbackOtherInfoTitle: otherInfoTitle,
     );
     final fieldNames = schema.readableFieldNames;
-    final values = await _recordReader.read(
+    var values = await _recordReader.read(
       model: crmLeadModel,
       id: id,
       fieldNames: fieldNames,
     );
+    final detailLayout = await _loadMobileLayout('detail');
+    if (detailLayout.isConfigured) {
+      values = await _m2mEnricher.enrich(values, detailLayout.allFields);
+    }
     MobileUiDebugLog.detailValues(
       leadId: id,
       values: values,
@@ -290,6 +319,35 @@ class LeadRepository {
     return _updateMockFromValues(id: id, formValues: formValues);
   }
 
+  Future<List<({int id, String name})>> fetchCrmTags() async {
+    if (!AppConfig.useRealApi) {
+      return [
+        (id: 1, name: 'Hot'),
+        (id: 2, name: 'VIP'),
+        (id: 3, name: 'Follow-up'),
+      ];
+    }
+    final rows = await _rpc.callKw(
+      model: 'crm.tag',
+      method: 'search_read',
+      args: [[]],
+      kwargs: {
+        'fields': ['id', 'name'],
+        'order': 'name asc',
+        'limit': 500,
+      },
+    );
+    if (rows is! List) return [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+          ),
+    ];
+  }
+
   Future<List<({int id, String name})>> fetchLeadStages() async {
     if (!AppConfig.useRealApi) {
       return [
@@ -393,17 +451,54 @@ class LeadRepository {
     return view.summary;
   }
 
-  /// Build Odoo write dict from form layout + dynamic form values.
+  /// Build Odoo write dict from **form** layout + dynamic form values.
   Future<Map<String, dynamic>> buildWriteValuesFromMap(
     Map<String, dynamic> formValues,
-  ) async {
+  ) async =>
+      _buildValuesFromLayoutScreen('form', formValues, fallbackScreen: 'form');
+
+  /// Build Odoo create dict from **create** layout (fallback form).
+  Future<Map<String, dynamic>> buildCreateValuesFromMap(
+    Map<String, dynamic> formValues,
+  ) async =>
+      _buildValuesFromLayoutScreen('create', formValues, fallbackScreen: 'form');
+
+  Future<Map<String, dynamic>> _buildValuesFromLayoutScreen(
+    String screen,
+    Map<String, dynamic> formValues, {
+    required String fallbackScreen,
+  }) async {
     if (AppConfig.useMobileUiConfig) {
-      final layout = await _loadMobileLayout('form');
+      var layout = await _loadMobileLayout(screen);
+      if (!layout.isConfigured && fallbackScreen != screen) {
+        layout = await _loadMobileLayout(fallbackScreen);
+      }
       if (layout.isConfigured) {
         return _writeValuesFromMobileMap(layout, formValues);
       }
     }
     return Map<String, dynamic>.from(formValues);
+  }
+
+  Future<Lead> _createRemote(Map<String, dynamic> formValues) async {
+    final values = await buildCreateValuesFromMap(formValues);
+    _applyCreateDefaults(values);
+
+    final id = await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'create',
+      args: [values],
+    );
+
+    final newId = id is int ? id : int.tryParse(id.toString());
+    if (newId == null) {
+      throw OdooException(message: 'Invalid create response');
+    }
+    return fetchLeadById(newId);
+  }
+
+  void _applyCreateDefaults(Map<String, dynamic> values) {
+    values.putIfAbsent('type', () => 'lead');
   }
 
   /// Build Odoo write dict from form layout + submitted values.
@@ -434,7 +529,8 @@ class LeadRepository {
     for (final section in layout.sections) {
       for (final field in section.fields) {
         if (field.readonly) continue;
-        if (field.type == 'many2many' || field.type == 'one2many') continue;
+        if (field.type == 'one2many') continue;
+        if (field.type == 'many2many' && field.widget != 'tags') continue;
         if (!formValues.containsKey(field.name)) continue;
         values[field.name] =
             MobileUiWriteCoercer.coerce(field, formValues[field.name]);
@@ -496,6 +592,29 @@ class LeadRepository {
       }
     }
     return values;
+  }
+
+  Future<Lead> _createMock(Map<String, dynamic> formValues) async {
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    final values = await buildCreateValuesFromMap(formValues);
+    _applyCreateDefaults(values);
+
+    final nextId = _mockOverrides.keys.fold<int>(
+      0,
+      (max, id) => id > max ? id : max,
+    ) + 1;
+
+    final lead = Lead.fromOdoo({
+      ...values,
+      'id': nextId,
+      'create_date': DateTime.now().toIso8601String(),
+      'user_id': [0, 'Demo User'],
+      'stage_id': values['stage_id'] is List
+          ? values['stage_id']
+          : [1, 'New'],
+    });
+    _mockOverrides[nextId] = lead;
+    return lead;
   }
 
   Future<Lead> _updateMockFromValues({

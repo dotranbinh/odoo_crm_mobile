@@ -1,6 +1,6 @@
 {
     'name': 'CRM Mobile UI',
-    'version': '17.0.1.0.3',
+    'version': '17.0.1.0.5',
     'category': 'Sales/CRM',
     'summary': 'Configure mobile CRM app screens (list, detail, form)',
     'description': """
@@ -18,6 +18,8 @@
         'data/crm_lead_detail_marketing_sync.xml',
         'data/crm_lead_form_marketing_sync.xml',
         'data/crm_lead_detail_address_sync.xml',
+        'data/crm_lead_tags_sync.xml',
+        'data/crm_lead_create_sync.xml',
     ],
     'installable': True,
     'application': False,

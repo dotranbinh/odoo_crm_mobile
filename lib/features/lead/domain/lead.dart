@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../core/odoo/odoo_field_formatter.dart';
+
 part 'lead.freezed.dart';
 part 'lead.g.dart';
 
@@ -73,7 +75,7 @@ abstract class Lead with _$Lead {
         createdAt: json['create_date'] != null
             ? DateTime.tryParse(_str(json['create_date'])) ?? DateTime.now()
             : DateTime.now(),
-        note: _strOrNull(json['description']),
+        note: _plainNote(json['description']),
         companyName: _strOrNull(json['partner_name']) ??
             _many2oneName(json['partner_id']),
         street: _strOrNull(json['street']),
@@ -101,6 +103,13 @@ String? _strOrNull(dynamic value) {
   if (value is String && value.isNotEmpty) return value;
   if (value is bool && !value) return null;
   return null;
+}
+
+String? _plainNote(dynamic value) {
+  final raw = _strOrNull(value);
+  if (raw == null) return null;
+  final plain = OdooFieldFormatter.stripHtml(raw);
+  return plain.isEmpty ? null : plain;
 }
 
 double? _numOrNull(dynamic value) {

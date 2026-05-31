@@ -5,6 +5,7 @@ import '../../app/constants/app_sizes.dart';
 import '../../app/theme/app_colors.dart';
 import '../odoo/odoo_field_definition.dart';
 import '../odoo/odoo_field_formatter.dart';
+import '../odoo/odoo_many2many_enricher.dart';
 
 class OdooFieldTile extends StatelessWidget {
   const OdooFieldTile({
@@ -18,19 +19,30 @@ class OdooFieldTile extends StatelessWidget {
   final dynamic value;
   final bool showEmpty;
 
+  bool get _useTagChips =>
+      definition.widget == 'tags' ||
+      (definition.type == 'many2many' && definition.widget != 'text');
+
   @override
   Widget build(BuildContext context) {
-    final display = OdooFieldFormatter.format(
-      definition: definition,
-      value: value,
-    );
+    final tagLabels = _useTagChips ? Many2manyValueHelper.labels(value) : null;
 
-    if (!showEmpty && !definition.showIfEmpty && (display == null || display.isEmpty)) {
+    final display = tagLabels == null
+        ? OdooFieldFormatter.format(
+            definition: definition,
+            value: value,
+          )
+        : (tagLabels.isEmpty ? null : tagLabels.join(', '));
+
+    if (!showEmpty &&
+        !definition.showIfEmpty &&
+        (display == null || display.isEmpty) &&
+        (tagLabels == null || tagLabels.isEmpty)) {
       return const SizedBox.shrink();
     }
 
     final text = display ?? '—';
-    final canCopy = definition.isCopyable && text != '—';
+    final canCopy = definition.isCopyable && text != '—' && tagLabels == null;
 
     return InkWell(
       onTap: canCopy
@@ -69,10 +81,23 @@ class OdooFieldTile extends StatelessWidget {
                         ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    text,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  if (tagLabels != null && tagLabels.isNotEmpty)
+                    Wrap(
+                      spacing: AppSizes.xs,
+                      runSpacing: AppSizes.xs,
+                      children: [
+                        for (final label in tagLabels)
+                          Chip(
+                            label: Text(label),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                      ],
+                    )
+                  else
+                    Text(
+                      text,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                 ],
               ),
             ),

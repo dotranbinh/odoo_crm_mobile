@@ -4,6 +4,7 @@ class OdooFieldDefinition {
     required this.type,
     required this.label,
     this.relation,
+    this.widget,
     this.selection = const [],
     this.readonly = false,
     this.required = false,
@@ -14,6 +15,7 @@ class OdooFieldDefinition {
   final String type;
   final String label;
   final String? relation;
+  final String? widget;
   final List<List<dynamic>> selection;
   final bool readonly;
   final bool required;

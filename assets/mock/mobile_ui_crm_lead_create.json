@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "model": "crm.lead",
+  "screen": "create",
+  "other_info_title": "Other Information",
+  "include_custom_fields": true,
+  "sections": [
+    {
+      "key": "contact",
+      "title": "Contact Information",
+      "sequence": 10,
+      "collapsed": false,
+      "fields": [
+        {"name": "partner_name", "label": "Customer", "type": "char", "widget": "text", "required": true, "sequence": 10},
+        {"name": "contact_name", "label": "Contact Name", "type": "char", "widget": "text", "sequence": 20},
+        {"name": "phone", "label": "Phone", "type": "char", "widget": "phone", "required": true, "sequence": 30},
+        {"name": "email_from", "label": "Email", "type": "char", "widget": "email", "sequence": 40},
+        {"name": "mobile", "label": "Mobile", "type": "char", "widget": "phone", "sequence": 50}
+      ]
+    },
+    {
+      "key": "opportunity",
+      "title": "Opportunity",
+      "sequence": 20,
+      "collapsed": false,
+      "fields": [
+        {"name": "name", "label": "Opportunity", "type": "char", "widget": "text", "sequence": 10},
+        {"name": "stage_id", "label": "Stage", "type": "many2one", "widget": "stage", "sequence": 20},
+        {"name": "priority", "label": "Priority", "type": "selection", "widget": "priority", "selection": [["0", "Low"], ["1", "Normal"], ["2", "High"], ["3", "Very High"]], "sequence": 30},
+        {"name": "expected_revenue", "label": "Expected Revenue", "type": "monetary", "widget": "currency", "sequence": 40},
+        {"name": "date_deadline", "label": "Expected Closing", "type": "date", "widget": "date", "sequence": 50}
+      ]
+    },
+    {
+      "key": "marketing",
+      "title": "Marketing",
+      "sequence": 25,
+      "collapsed": false,
+      "fields": [
+        {"name": "source_id", "label": "Source", "type": "many2one", "widget": "many2one", "relation": "utm.source", "sequence": 10},
+        {"name": "tag_ids", "label": "Tags", "type": "many2many", "widget": "tags", "relation": "crm.tag", "sequence": 20}
+      ]
+    },
+    {
+      "key": "notes",
+      "title": "Notes",
+      "sequence": 30,
+      "collapsed": false,
+      "fields": [
+        {"name": "description", "label": "Notes", "type": "html", "widget": "html", "sequence": 10}
+      ]
+    }
+  ]
+}

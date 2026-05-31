@@ -38,6 +38,7 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
   MobileUiLayoutSchema? _formLayout;
   Map<String, dynamic> _formValues = {};
   List<({int id, String name})> _stageOptions = [];
+  List<({int id, String name})> _tagOptions = [];
   bool _layoutReady = false;
   bool _useMobileForm = false;
 
@@ -107,11 +108,13 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
       ),
     );
     final stages = await repo.fetchLeadStages();
+    final tags = await repo.fetchCrmTags();
     if (!mounted) return;
     setState(() {
       _formLayout = layout.isConfigured ? layout : null;
       _useMobileForm = layout.isConfigured;
       _stageOptions = stages;
+      _tagOptions = tags;
       _layoutReady = true;
     });
   }
@@ -343,6 +346,7 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
                     staticMany2oneOptions: {
                       'stage_id': _stageOptions,
                     },
+                    tagOptions: _tagOptions,
                   ),
                   onChanged: () => setState(() {}),
                 )

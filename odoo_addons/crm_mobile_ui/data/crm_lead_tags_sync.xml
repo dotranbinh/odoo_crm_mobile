@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Re-applied on upgrade: tag_ids on detail + form Marketing sections. -->
+<odoo>
+    <record id="field_detail_tag_ids" model="mobile.ui.field">
+        <field name="section_id" ref="section_lead_detail_marketing"/>
+        <field name="field_name">tag_ids</field>
+        <field name="label">Tags</field>
+        <field name="sequence">25</field>
+        <field name="widget">tags</field>
+    </record>
+    <record id="field_form_tag_ids" model="mobile.ui.field">
+        <field name="section_id" ref="section_lead_form_marketing"/>
+        <field name="field_name">tag_ids</field>
+        <field name="label">Tags</field>
+        <field name="sequence">35</field>
+        <field name="widget">tags</field>
+    </record>
+</odoo>

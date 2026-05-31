@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Re-applied on upgrade so existing DBs get create layout. -->
+<odoo>
+    <record id="layout_crm_lead_create" model="mobile.ui.layout">
+        <field name="name">CRM Lead - Create (Mobile)</field>
+        <field name="model_name">crm.lead</field>
+        <field name="screen">create</field>
+        <field name="active" eval="True"/>
+        <field name="include_custom_fields" eval="True"/>
+        <field name="other_info_title">Other Information</field>
+    </record>
+</odoo>

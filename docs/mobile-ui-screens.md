@@ -26,20 +26,22 @@ flowchart TB
 
 ---
 
-## Ba loại màn hình (`screen`)
+## Bốn loại màn hình (`screen`)
 
 | `screen` | Mục đích | Flutter dùng gì | Odoo RPC |
 |----------|----------|-----------------|----------|
 | `list` | Danh sách + thẻ card | `MobileUiListDisplay` + widget card feature | `search_read` với `fields` = tất cả field trong layout |
 | `detail` | Xem chi tiết (read-only) | `MobileUiSchemaMapper` → `OdooDetailSection` | `read` theo field layout `detail` |
 | `form` | Sửa bản ghi | `MobileUiFormBuilder` + `MobileUiFieldRenderer` | `read` (nạp form) + `write` qua `MobileUiWriteCoercer` |
+| `create` | Tạo bản ghi mới | `MobileUiFormBuilder` (values rỗng + defaults) | `create` qua `buildCreateValuesFromMap` |
 
 **Lưu ý:** `detail` và `form` là **hai layout riêng** — detail có thể nhiều field read-only; form chỉ gồm field cho phép sửa.
 
 Fallback khi layout trống (`version: 0`, không section):
 
 - `detail`: parse form XML qua `get_views` nếu `AppConfig.mobileUiFallbackToFormXml = true`
-- `form`: form legacy hardcoded trong screen (xem `edit_lead_screen.dart`)
+- `form`: form legacy hardcoded trong `edit_lead_screen.dart`
+- `create`: fallback layout `form`, rồi form legacy trong `create_lead_screen.dart`
 - `list`: danh sách field cố định trong repository (xem `_listFields` trong `lead_repository.dart`)
 
 ---
@@ -102,11 +104,12 @@ lib/features/{feature}/
 | Việc cần làm | Tham chiếu Leads |
 |--------------|------------------|
 | Hằng `static const model = '...'` | `crmLeadModel` |
-| `loadListLayout()` / `loadFormLayout()` | `_loadMobileLayout('list'/'form')` |
+| `loadListLayout()` / `loadFormLayout()` / `loadCreateLayout()` | `_loadMobileLayout('list'/'form'/'create')` |
 | List: `search_read` với `fields` từ layout hoặc fallback | `_fetchRemote` |
 | Detail: `_resolveDetailSchema()` → `detail` layout hoặc `get_views` | `_resolveDetailSchema` |
 | Edit load: `read` theo field **form** layout | `fetchLeadEditViewData` |
 | Write: `buildWriteValuesFromMap` + `MobileUiWriteCoercer` | `updateLeadFromValues` |
+| Create: `buildCreateValuesFromMap` + `createLeadFromValues` | `create_lead_screen.dart` |
 
 Inject `MobileUiConfigService` qua provider (đã có `mobileUiConfigServiceProvider`).
 
@@ -212,19 +215,21 @@ Provider tiện ích: `mobileUiLayoutProvider((model, screen))`.
 | date, datetime | ✓ | ✓ | |
 | selection | ✓ | ✓ | |
 | many2one | ✓ | ✓ | Searchable hoặc dropdown tĩnh |
-| many2many | read-only label | bỏ qua khi write | |
+| many2many | read-only (comma/chips) | chỉ với widget `tags` | |
+| many2many + widget `tags` | chip | multi-select + `write` `[(6,0,ids)]` | vd. `tag_ids` → `crm.tag` |
 | one2many | read-only label | bỏ qua khi write | |
 
 ### Widget overrides (`mobile.ui.field.widget`)
 
-`stage`, `priority`, `phone`, `email`, `url`, `html` — xem `MobileUiFieldRenderer._buildWidgetOverride`.
+`stage`, `priority`, `phone`, `email`, `url`, `html`, **`tags`** (many2many) — xem `MobileUiFieldRenderer._buildWidgetOverride`.
+
+`tag_ids`: cấu hình trên Odoo với widget **Tags**; app enrich ID → tên qua `OdooMany2manyEnricher`, edit dùng `TagsField`.
 
 ### Chưa hỗ trợ / làm thủ công
 
-- `tag_ids` và many2many chỉnh sửa
+- Tạo tag mới trên mobile; many2many generic (không phải widget `tags`)
 - Chatter (`message_*`, `activity_*`) — widget riêng ngoài layout
 - One2many lines (order lines, meetings, …)
-- Màn **tạo mới** (`create_lead_screen.dart`) vẫn form tĩnh — chưa gắn `form` layout
 
 Chi tiết JSON mẫu: [odoo_addons/crm_mobile_ui/data/reference/README.md](../odoo_addons/crm_mobile_ui/data/reference/README.md).
 

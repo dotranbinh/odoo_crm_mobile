@@ -6,6 +6,7 @@ class MobileUiFormContext {
   const MobileUiFormContext({
     required this.searchMany2one,
     this.staticMany2oneOptions = const {},
+    this.tagOptions = const [],
   });
 
   /// Async lookup for any many2one field that declares a [MobileUiFieldSchema.relation].
@@ -16,4 +17,7 @@ class MobileUiFormContext {
 
   /// Preloaded many2one options keyed by field name (e.g. stage_id with custom order).
   final Map<String, List<Many2oneOption>> staticMany2oneOptions;
+
+  /// All CRM tags for `tag_ids` (widget `tags`).
+  final List<Many2oneOption> tagOptions;
 }

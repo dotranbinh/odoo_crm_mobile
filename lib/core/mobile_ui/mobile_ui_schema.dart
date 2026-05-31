@@ -37,6 +37,8 @@ class MobileUiLayoutSchema {
     return null;
   }
 
+  bool hasField(String name) => fieldByName(name) != null;
+
   MobileUiFieldSchema? get listPrimaryField {
     for (final s in sections) {
       for (final f in s.fields) {
@@ -61,6 +63,12 @@ class MobileUiLayoutSchema {
       }
     }
     return null;
+  }
+
+  Iterable<MobileUiFieldSchema> get allFields sync* {
+    for (final section in sections) {
+      yield* section.fields;
+    }
   }
 
   factory MobileUiLayoutSchema.fromJson(Map<String, dynamic> json) {

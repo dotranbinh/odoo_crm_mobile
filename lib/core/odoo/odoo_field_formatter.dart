@@ -40,12 +40,40 @@ abstract final class OdooFieldFormatter {
       case 'many2many':
         return _many2manyLabel(value);
       case 'html':
-        return _stripHtml(value.toString());
+        return stripHtml(value.toString());
       case 'text':
       case 'char':
       default:
-        return value.toString();
+        final raw = value.toString();
+        if (isHtmlField(definition)) {
+          return stripHtml(raw);
+        }
+        return raw;
     }
+  }
+
+  /// True when field stores Odoo HTML (notes / description).
+  static bool isHtmlField(OdooFieldDefinition definition) =>
+      definition.type == 'html' ||
+      definition.widget == 'html' ||
+      definition.name == 'description';
+
+  /// Plain text from Odoo HTML (tags removed, entities decoded).
+  static String stripHtml(String html) {
+    var text = html
+        .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'</p>', caseSensitive: false), '\n')
+        .replaceAll(RegExp(r'<[^>]*>'), ' ')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'");
+    text = text.replaceAll(RegExp(r'[ \t]+'), ' ');
+    text = text.replaceAll(RegExp(r'\n[ \t]+'), '\n');
+    text = text.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+    return text.trim();
   }
 
   static bool _isEmpty(dynamic value) {
@@ -95,10 +123,4 @@ abstract final class OdooFieldFormatter {
     return names.isEmpty ? null : names.join(', ');
   }
 
-  static String _stripHtml(String html) {
-    return html
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-  }
 }

@@ -33,5 +33,6 @@
   "date_closed": false,
   "lost_reason_id": false,
   "description": "<p>Discussing Q3 implementation timeline.</p>",
+  "tag_ids": [[1, "Hot"], [2, "VIP"]],
   "x_custom_note": "VIP customer from trade show"
 }

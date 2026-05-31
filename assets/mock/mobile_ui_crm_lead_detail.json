@@ -78,6 +78,7 @@
         {"name": "source_id", "label": "Source", "type": "many2one", "widget": "many2one", "sequence": 10},
         {"name": "medium_id", "label": "Medium", "type": "many2one", "widget": "many2one", "sequence": 20},
         {"name": "campaign_id", "label": "Campaign", "type": "many2one", "widget": "many2one", "sequence": 30},
+        {"name": "tag_ids", "label": "Tags", "type": "many2many", "widget": "tags", "relation": "crm.tag", "sequence": 35},
         {"name": "referred", "label": "Referred By", "type": "char", "widget": "text", "sequence": 40}
       ]
     },

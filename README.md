@@ -96,21 +96,21 @@ lib/
 
 ## Mobile UI config (Odoo addon + Flutter)
 
-When `useMobileUiConfig = true` in [lib/app/constants/app_config.dart](lib/app/constants/app_config.dart), the app loads layouts from the Odoo addon **`crm_mobile_ui`** via `mobile.ui.layout.get_mobile_layout` for **list**, **detail**, and **form (edit)** on `crm.lead`. If no active layout is returned (`version: 0`), the app falls back to `get_views` parsing when `mobileUiFallbackToFormXml = true`.
+When `useMobileUiConfig = true` in [lib/app/constants/app_config.dart](lib/app/constants/app_config.dart), the app loads layouts from the Odoo addon **`crm_mobile_ui`** via `mobile.ui.layout.get_mobile_layout` for **list**, **detail**, **form (edit)**, and **create** on `crm.lead`. If no active layout is returned (`version: 0`), detail falls back to `get_views` when `mobileUiFallbackToFormXml = true`; create falls back to the `form` layout, then a small legacy form.
 
 | Flag | Default | Meaning |
 |------|---------|---------|
 | `useMobileUiConfig` | `true` | Prefer server mobile layout |
 | `mobileUiFallbackToFormXml` | `true` | Use `get_views` when addon/layout missing |
 
-Flutter: `lib/core/mobile_ui/` (config service, schema, mapper, form builder, list card display). Mock assets: `assets/mock/mobile_ui_crm_lead_{list,detail,form}.json`.
+Flutter: `lib/core/mobile_ui/` (config service, schema, mapper, form builder, list card display). Mock assets: `assets/mock/mobile_ui_crm_lead_{list,detail,form,create}.json`.
 
 ### Local Odoo (`crm_odoo_mobile`)
 
 1. Start stack: `docker compose up` in `crm_odoo/crm_odoo_mobile`.
 2. Install addon **CRM Mobile UI** (`crm_mobile_ui`) — already mounted at `custom-addons/crm_mobile_ui`.
 3. Open **CRM → Configuration → Mobile App UI** and adjust layouts (list card, detail sections, edit form).
-4. Flutter app calls `mobile.ui.layout.get_mobile_layout('crm.lead', 'list'|'detail'|'form')` on each lead screen.
+4. Flutter app calls `mobile.ui.layout.get_mobile_layout('crm.lead', 'list'|'detail'|'form'|'create')` on lead screens.
 
 ### Remote server
 
@@ -147,7 +147,7 @@ Odoo purple `#714B67` — [lib/app/theme/app_colors.dart](lib/app/theme/app_colo
 | `/leads` | Lead list (Odoo `crm.lead`) |
 | `/leads/:id` | Lead detail (dynamic Odoo fields) |
 | `/leads/:id/edit` | Edit lead |
-| `/create-lead` | Create lead (mock save) |
+| `/create-lead` | Create lead (layout `create` từ Odoo; fallback `form`) |
 | `/orders` | Orders (mock) |
 | `/profile` | Profile |
 | `/settings` | Settings |

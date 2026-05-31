@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../app/constants/app_sizes.dart';
+import '../odoo/odoo_field_formatter.dart';
 import '../utils/validators.dart';
 import '../widgets/searchable_many2one_field.dart';
+import '../widgets/tags_field.dart';
 import 'mobile_ui_form_context.dart';
 import 'mobile_ui_schema.dart';
 
@@ -30,6 +32,9 @@ class MobileUiFieldRenderer {
       case 'many2one':
         return _buildMany2one(field);
       case 'many2many':
+        if (field.widget == 'tags' && !field.readonly) {
+          return _buildTagsField(field);
+        }
         return _buildMany2manyReadOnly(field);
       case 'one2many':
         return _buildOne2manyReadOnly(field);
@@ -51,11 +56,27 @@ class MobileUiFieldRenderer {
 
   Widget? _buildWidgetOverride(MobileUiFieldSchema field) {
     return switch (field.widget) {
+      'tags' => field.readonly
+          ? _buildMany2manyReadOnly(field)
+          : _buildTagsField(field),
       'stage' => _buildStaticMany2oneDropdown(field),
       'priority' => _buildPriority(field),
       'phone' || 'email' || 'url' || 'html' => _buildText(field),
       _ => null,
     };
+  }
+
+  Widget _buildTagsField(MobileUiFieldSchema field) {
+    final selected = TagsField.idsFromValue(initialValues[field.name]);
+    return TagsField(
+      label: field.label,
+      options: formContext.tagOptions,
+      selectedIds: selected,
+      onChanged: (ids) {
+        initialValues[field.name] = ids;
+        onChanged();
+      },
+    );
   }
 
   Widget _buildMany2one(MobileUiFieldSchema field) {
@@ -132,7 +153,7 @@ class MobileUiFieldRenderer {
     final label = SearchableMany2oneField.displayNameFromValue(
           initialValues[field.name],
         ) ??
-        _strValue(initialValues[field.name]) ??
+        _strValue(field, initialValues[field.name]) ??
         '—';
 
     return InputDecorator(
@@ -228,7 +249,7 @@ class MobileUiFieldRenderer {
   Widget _buildPriority(MobileUiFieldSchema field) {
     return DropdownButtonFormField<String>(
       isExpanded: true,
-      initialValue: _strValue(initialValues[field.name]) ?? '1',
+      initialValue: _strValue(field, initialValues[field.name]) ?? '1',
       decoration: InputDecoration(labelText: field.label),
       items: const [
         DropdownMenuItem(value: '0', child: Text('Low')),
@@ -257,7 +278,7 @@ class MobileUiFieldRenderer {
     final controller = controllers.putIfAbsent(
       field.name,
       () => TextEditingController(
-        text: _strValue(initialValues[field.name]) ?? '',
+        text: _strValue(field, initialValues[field.name]) ?? '',
       ),
     );
 
@@ -326,9 +347,15 @@ class MobileUiFieldRenderer {
         maxLines: 1,
       );
 
-  String? _strValue(dynamic value) {
+  String? _strValue(MobileUiFieldSchema field, dynamic value) {
     if (value == null || value is bool && !value) return null;
-    return value.toString();
+    final raw = value.toString();
+    if (field.widget == 'html' ||
+        field.type == 'html' ||
+        field.name == 'description') {
+      return OdooFieldFormatter.stripHtml(raw);
+    }
+    return raw;
   }
 
   String? _formatDate(dynamic value) {

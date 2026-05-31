@@ -13,6 +13,7 @@ class MobileUiLayout(models.Model):
             ('list', 'List'),
             ('detail', 'Detail'),
             ('form', 'Form (Edit)'),
+            ('create', 'Create (New)'),
         ],
         required=True,
         index=True,
@@ -205,6 +206,8 @@ class MobileUiLayout(models.Model):
         widget = field_line.widget
         if widget == 'text' and meta.get('type') == 'many2one':
             widget = 'many2one'
+        if widget == 'text' and meta.get('type') == 'many2many':
+            widget = 'tags'
         return {
             'name': field_line.field_name,
             'label': field_line.label or meta.get('string') or field_line.field_name,
@@ -259,6 +262,8 @@ class MobileUiLayout(models.Model):
             return 'priority'
         if ftype == 'many2one':
             return 'many2one'
+        if ftype == 'many2many':
+            return 'tags'
         if ftype == 'boolean':
             return 'boolean'
         if ftype == 'date':

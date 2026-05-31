@@ -31,6 +31,7 @@ class MobileUiField(models.Model):
             ('html', 'HTML'),
             ('priority', 'Priority'),
             ('stage', 'Stage'),
+            ('tags', 'Tags (many2many)'),
         ],
         string='Widget',
         default='text',
