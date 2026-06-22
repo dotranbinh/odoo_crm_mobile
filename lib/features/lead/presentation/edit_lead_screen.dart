@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/constants/app_config.dart';
 import '../../../app/constants/app_sizes.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../core/mobile_ui/mobile_ui_debug_log.dart';
 import '../../../core/mobile_ui/mobile_ui_form_builder.dart';
 import '../../../core/mobile_ui/mobile_ui_form_context.dart';
@@ -312,17 +313,17 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
         title: Text(l10n.editLead),
         leading: IconButton(
           icon: const Icon(Icons.close),
+          tooltip: l10n.cancel,
           onPressed: isSaving ? null : () => context.pop(),
         ),
-        actions: [
-          TextButton(
-            onPressed: isSaving ? null : _onSave,
-            child: Text(l10n.save),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.screenPaddingH,
+          AppSizes.md,
+          AppSizes.screenPaddingH,
+          AppSizes.xl,
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -357,11 +358,6 @@ class _EditLeadScreenState extends ConsumerState<EditLeadScreen> {
                 label: l10n.save,
                 isLoading: isSaving,
                 onPressed: _onSave,
-              ),
-              const SizedBox(height: AppSizes.md),
-              OutlinedButton(
-                onPressed: isSaving ? null : () => context.pop(),
-                child: Text(l10n.cancel),
               ),
             ],
           ),
@@ -529,8 +525,10 @@ class _SectionLabel extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSizes.sm),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0,
             ),
       ),
     );

@@ -10,9 +10,24 @@ import '../../application/lead_chatter_controller.dart';
 import '../../domain/mail_message.dart';
 
 class LeadChatterCard extends ConsumerStatefulWidget {
-  const LeadChatterCard({required this.leadId, super.key});
+  const LeadChatterCard({
+    required this.leadId,
+    super.key,
+    this.showHeader = true,
+    this.padded = true,
+    this.showComposer = true,
+    this.kinds,
+    this.emptyIcon = Icons.forum_outlined,
+    this.emptyText,
+  });
 
   final int leadId;
+  final bool showHeader;
+  final bool padded;
+  final bool showComposer;
+  final Set<MailMessageKind>? kinds;
+  final IconData emptyIcon;
+  final String? emptyText;
 
   @override
   ConsumerState<LeadChatterCard> createState() => _LeadChatterCardState();
@@ -59,6 +74,133 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
     final l10n = AppLocalizations.of(context)!;
     final asyncMessages = ref.watch(leadChatterControllerProvider(widget.leadId));
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.showHeader) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSizes.md,
+              AppSizes.sm,
+              AppSizes.md,
+              AppSizes.sm,
+            ),
+            child: SectionHeader(title: l10n.chatterAndNotes),
+          ),
+          const Divider(height: 1),
+        ],
+        asyncMessages.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.all(AppSizes.lg),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (e, _) => Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: Column(
+              children: [
+                Text(e.toString()),
+                const SizedBox(height: AppSizes.sm),
+                OutlinedButton(
+                  onPressed: () => ref
+                      .read(
+                        leadChatterControllerProvider(widget.leadId).notifier,
+                      )
+                      .refresh(),
+                  child: Text(l10n.retry),
+                ),
+              ],
+            ),
+          ),
+          data: (messages) {
+            final visible = widget.kinds == null
+                ? messages
+                : messages
+                    .where((m) => widget.kinds!.contains(m.kind))
+                    .toList();
+            if (visible.isEmpty) {
+              return _EmptyMessages(
+                icon: widget.emptyIcon,
+                text: widget.emptyText ?? l10n.noChatterMessages,
+              );
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: visible.length,
+              separatorBuilder: (context, _) => const Divider(height: 1),
+              itemBuilder: (context, index) =>
+                  _MessageTile(message: visible[index], l10n: l10n),
+            );
+          },
+        ),
+        if (widget.showComposer) ...[
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SegmentedButton<bool>(
+                  segments: [
+                    ButtonSegment(
+                      value: true,
+                      label: Text(l10n.logNote),
+                      icon: const Icon(Icons.sticky_note_2_outlined, size: 18),
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      label: Text(l10n.sendMessage),
+                      icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                    ),
+                  ],
+                  selected: {_postAsLogNote},
+                  onSelectionChanged: (values) {
+                    setState(() => _postAsLogNote = values.first);
+                  },
+                ),
+                const SizedBox(height: AppSizes.sm),
+                TextField(
+                  controller: _composerController,
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: _postAsLogNote
+                        ? l10n.logNoteHint
+                        : l10n.sendMessageHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                  enabled: !_posting,
+                ),
+                const SizedBox(height: AppSizes.sm),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton.icon(
+                    onPressed: _posting ? null : _submit,
+                    icon: _posting
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(
+                            _postAsLogNote
+                                ? Icons.note_add_outlined
+                                : Icons.send_outlined,
+                          ),
+                    label: Text(
+                      _postAsLogNote ? l10n.addLogNote : l10n.sendMessage,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (!widget.padded) return content;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSizes.md,
@@ -69,128 +211,35 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
       child: Card(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSizes.md,
-                  AppSizes.sm,
-                  AppSizes.md,
-                  AppSizes.sm,
-                ),
-                child: SectionHeader(title: l10n.chatterAndNotes),
-              ),
-              const Divider(height: 1),
-              asyncMessages.when(
-                loading: () => const Padding(
-                  padding: EdgeInsets.all(AppSizes.lg),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                error: (e, _) => Padding(
-                  padding: const EdgeInsets.all(AppSizes.md),
-                  child: Column(
-                    children: [
-                      Text(e.toString()),
-                      const SizedBox(height: AppSizes.sm),
-                      OutlinedButton(
-                        onPressed: () => ref
-                            .read(
-                              leadChatterControllerProvider(widget.leadId)
-                                  .notifier,
-                            )
-                            .refresh(),
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                  ),
-                ),
-                data: (messages) {
-                  if (messages.isEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.all(AppSizes.md),
-                      child: Text(
-                        l10n.noChatterMessages,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                      ),
-                    );
-                  }
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: messages.length,
-                    separatorBuilder: (context, _) => const Divider(height: 1),
-                    itemBuilder: (context, index) =>
-                        _MessageTile(message: messages[index], l10n: l10n),
-                  );
-                },
-              ),
-              const Divider(height: 1),
-              Padding(
-                padding: const EdgeInsets.all(AppSizes.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SegmentedButton<bool>(
-                      segments: [
-                        ButtonSegment(
-                          value: true,
-                          label: Text(l10n.logNote),
-                          icon: const Icon(Icons.sticky_note_2_outlined, size: 18),
-                        ),
-                        ButtonSegment(
-                          value: false,
-                          label: Text(l10n.sendMessage),
-                          icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                        ),
-                      ],
-                      selected: {_postAsLogNote},
-                      onSelectionChanged: (values) {
-                        setState(() => _postAsLogNote = values.first);
-                      },
-                    ),
-                    const SizedBox(height: AppSizes.sm),
-                    TextField(
-                      controller: _composerController,
-                      minLines: 2,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText: _postAsLogNote
-                            ? l10n.logNoteHint
-                            : l10n.sendMessageHint,
-                        border: const OutlineInputBorder(),
-                      ),
-                      enabled: !_posting,
-                    ),
-                    const SizedBox(height: AppSizes.sm),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: FilledButton.icon(
-                        onPressed: _posting ? null : _submit,
-                        icon: _posting
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : Icon(
-                                _postAsLogNote
-                                    ? Icons.note_add_outlined
-                                    : Icons.send_outlined,
-                              ),
-                        label: Text(
-                          _postAsLogNote ? l10n.addLogNote : l10n.sendMessage,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          child: content,
         ),
+      ),
+    );
+  }
+}
+
+class _EmptyMessages extends StatelessWidget {
+  const _EmptyMessages({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.xl),
+      child: Column(
+        children: [
+          Icon(icon, size: 28, color: AppColors.textSecondary),
+          const SizedBox(height: AppSizes.sm),
+          Text(
+            text,
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
       ),
     );
   }

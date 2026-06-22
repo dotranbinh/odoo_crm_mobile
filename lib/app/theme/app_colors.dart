@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
 
+/// Design tokens from [design.md](../../../../design.md).
 abstract final class AppColors {
-  static const primary = Color(0xFF714B67);
-  static const primaryDark = Color(0xFF5A3B53);
-  static const primaryLight = Color(0xFF9B6B8F);
-  static const accent = Color(0xFF8F8F8F);
-  static const success = Color(0xFF28A745);
-  static const warning = Color(0xFFFFC107);
-  static const danger = Color(0xFFDC3545);
-  static const surface = Color(0xFFF7F7F9);
-  static const card = Colors.white;
-  static const textPrimary = Color(0xFF1F1F2C);
-  static const textSecondary = Color(0xFF6B6B7B);
-  static const divider = Color(0xFFE8E8ED);
-  static const fabBackground = Color(0xFF714B67);
+  static const primary = Color(0xFF534AB7);
+  static const primaryTintLight = Color(0xFFEEEDFE);
+  static const primaryTintText = Color(0xFF3C3489);
+
+  static const primaryDark = primaryTintText;
+  static const primaryLight = Color(0xFF7F77DD);
+  static const fabBackground = primary;
+
+  static const statusNewBg = Color(0xFFEEEDFE);
+  static const statusNewText = Color(0xFF3C3489);
+  static const statusQualifiedBg = Color(0xFFFAEEDA);
+  static const statusQualifiedText = Color(0xFF633806);
+  static const statusWonBg = Color(0xFFE1F5EE);
+  static const statusWonText = Color(0xFF085041);
+  static const statusLostBg = Color(0xFFFAECE7);
+  static const statusLostText = Color(0xFF712B13);
+
+  static const textPrimary = Color(0xFF1C1C1E);
+  static const textSecondary = Color(0xFF8E8E93);
+  static const textTertiary = Color(0xFF5A5A5E);
+  static const border = Color(0xFFE5E1EA);
+  static const surfaceTint = Color(0xFFF7F7F8);
+  static const card = Color(0xFFFFFFFF);
+  static const screenBackground = Color(0xFFFFFFFF);
+
+  static const surface = surfaceTint;
+  static const divider = border;
+  static const accent = textSecondary;
+  static const success = statusWonText;
+  static const warning = statusQualifiedText;
+  static const danger = statusLostText;
 }

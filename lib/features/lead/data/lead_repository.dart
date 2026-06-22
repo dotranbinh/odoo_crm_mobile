@@ -57,12 +57,297 @@ class LeadRepository {
 
   Future<List<LeadListItem>> fetchLeads({
     LeadStage? stage,
+    int? stageId,
     String? query,
+    LeadType? recordType,
+    int offset = 0,
+    int limit = 25,
+    String order = 'create_date desc',
   }) {
     if (AppConfig.useRealApi) {
-      return _fetchRemote(stage: stage, query: query);
+      return _fetchRemote(
+        stage: stage,
+        stageId: stageId,
+        query: query,
+        recordType: recordType,
+        offset: offset,
+        limit: limit,
+        order: order,
+      );
     }
-    return _fetchMock(stage: stage, query: query);
+    return _fetchMock(stage: stage, query: query, recordType: recordType);
+  }
+
+  /// Resolves [LeadStage] enum to Odoo stage id using stage name heuristics.
+  Future<int?> resolveStageId(LeadStage stage) => _resolveStageId(stage);
+
+  /// Maps Odoo stage records to enum for tab filtering.
+  Future<Map<LeadStage, int>> buildStageIdMap() async {
+    final stages = await fetchLeadStages();
+    final map = <LeadStage, int>{};
+    for (final stage in stages) {
+      final enumStage = _mapStageNameToEnum(stage.name);
+      map.putIfAbsent(enumStage, () => stage.id);
+    }
+    return map;
+  }
+
+  LeadStage _mapStageNameToEnum(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('won')) return LeadStage.won;
+    if (lower.contains('lost')) return LeadStage.lost;
+    if (lower.contains('qualif')) return LeadStage.qualified;
+    if (lower.contains('propos')) return LeadStage.proposition;
+    return LeadStage.newLead;
+  }
+
+  Future<Lead> markWon(int id) async {
+    if (!AppConfig.useRealApi) {
+      return _updateMockStage(id, LeadStage.won);
+    }
+    await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'action_set_won',
+      args: [
+        [id],
+      ],
+    );
+    return fetchLeadById(id);
+  }
+
+  Future<Lead> markLost({
+    required int id,
+    int? lostReasonId,
+    String? closingNote,
+  }) async {
+    if (!AppConfig.useRealApi) {
+      return _updateMockStage(id, LeadStage.lost);
+    }
+    await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'action_set_lost',
+      args: [
+        [id],
+      ],
+      kwargs: {
+        if (lostReasonId != null) 'lost_reason_id': lostReasonId,
+        if (closingNote != null && closingNote.isNotEmpty)
+          'closing_note': closingNote,
+      },
+    );
+    return fetchLeadById(id);
+  }
+
+  Future<Lead> changeStage(int id, int stageId) async {
+    if (!AppConfig.useRealApi) {
+      final stage = await _stageFromId(stageId);
+      return _updateMockStage(id, stage ?? LeadStage.newLead);
+    }
+    await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'write',
+      args: [
+        [id],
+        {'stage_id': stageId},
+      ],
+    );
+    return fetchLeadById(id);
+  }
+
+  Future<Lead> assignSalesperson(int id, int userId) async {
+    if (!AppConfig.useRealApi) {
+      return fetchLeadById(id);
+    }
+    await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'write',
+      args: [
+        [id],
+        {'user_id': userId},
+      ],
+    );
+    return fetchLeadById(id);
+  }
+
+  Future<Lead> convertToOpportunity(int id) async {
+    if (!AppConfig.useRealApi) {
+      final current = await fetchLeadById(id);
+      final updated = current.copyWith(recordType: LeadType.opportunity);
+      _mockOverrides[id] = updated;
+      return updated;
+    }
+    await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'convert_opportunity',
+      args: [
+        [id],
+      ],
+    );
+    return fetchLeadById(id);
+  }
+
+  Future<List<({int id, String name})>> fetchLostReasons() async {
+    if (!AppConfig.useRealApi) {
+      return [
+        (id: 1, name: 'Too expensive'),
+        (id: 2, name: 'Not interested'),
+        (id: 3, name: 'Competitor'),
+      ];
+    }
+    final rows = await _rpc.callKw(
+      model: 'crm.lost.reason',
+      method: 'search_read',
+      args: [[]],
+      kwargs: {
+        'fields': ['id', 'name'],
+        'order': 'name asc',
+      },
+    );
+    if (rows is! List) return const [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+          ),
+    ];
+  }
+
+  Future<List<({int id, String name})>> fetchSalespersons() async {
+    if (!AppConfig.useRealApi) {
+      return [
+        (id: 1, name: 'Administrator'),
+        (id: 2, name: 'John Smith'),
+      ];
+    }
+    final rows = await _rpc.callKw(
+      model: 'res.users',
+      method: 'search_read',
+      args: [
+        [
+          ['share', '=', false],
+        ],
+      ],
+      kwargs: {
+        'fields': ['id', 'name'],
+        'order': 'name asc',
+        'limit': 200,
+      },
+    );
+    if (rows is! List) return const [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+          ),
+    ];
+  }
+
+  Future<List<({int id, String name, int sequence})>> fetchPipelineStages() async {
+    if (!AppConfig.useRealApi) {
+      return [
+        (id: 1, name: 'New', sequence: 1),
+        (id: 2, name: 'Qualified', sequence: 2),
+        (id: 3, name: 'Proposition', sequence: 3),
+        (id: 4, name: 'Won', sequence: 4),
+      ];
+    }
+    final rows = await _rpc.callKw(
+      model: 'crm.stage',
+      method: 'search_read',
+      args: [[]],
+      kwargs: {
+        'fields': ['id', 'name', 'sequence'],
+        'order': 'sequence asc, id asc',
+      },
+    );
+    if (rows is! List) return const [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+            sequence: row['sequence'] is num
+                ? (row['sequence'] as num).toInt()
+                : 0,
+          ),
+    ];
+  }
+
+  Future<List<({int id, String name})>> fetchSources() async {
+    if (!AppConfig.useRealApi) {
+      return [
+        (id: 1, name: 'Website'),
+        (id: 2, name: 'Referral'),
+        (id: 3, name: 'Trade Show'),
+        (id: 4, name: 'Cold Call'),
+        (id: 5, name: 'Social Media'),
+      ];
+    }
+    final rows = await _rpc.callKw(
+      model: 'utm.source',
+      method: 'search_read',
+      args: [[]],
+      kwargs: {
+        'fields': ['id', 'name'],
+        'order': 'name asc',
+        'limit': 100,
+      },
+    );
+    if (rows is! List) return const [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+          ),
+    ];
+  }
+
+  Future<int?> resolveSourceId(String sourceName) async {
+    if (sourceName.trim().isEmpty) return null;
+    if (!AppConfig.useRealApi) {
+      final sources = await fetchSources();
+      for (final s in sources) {
+        if (s.name.toLowerCase() == sourceName.toLowerCase()) return s.id;
+      }
+      return null;
+    }
+    final rows = await _rpc.callKw(
+      model: 'utm.source',
+      method: 'search_read',
+      args: [
+        [
+          ['name', 'ilike', sourceName],
+        ],
+      ],
+      kwargs: {
+        'fields': ['id'],
+        'limit': 1,
+      },
+    );
+    if (rows is! List || rows.isEmpty) return null;
+    return (rows.first as Map<String, dynamic>)['id'] as int?;
+  }
+
+  Future<LeadStage?> _stageFromId(int stageId) async {
+    final stages = await fetchLeadStages();
+    for (final s in stages) {
+      if (s.id == stageId) return _mapStageNameToEnum(s.name);
+    }
+    return null;
+  }
+
+  Future<Lead> _updateMockStage(int id, LeadStage stage) async {
+    final current = await fetchLeadById(id);
+    final updated = current.copyWith(stage: stage);
+    _mockOverrides[id] = updated;
+    return updated;
   }
 
   Future<MobileUiLayoutSchema> loadListLayout() => _loadMobileLayout('list');
@@ -380,9 +665,21 @@ class LeadRepository {
 
   Future<List<LeadListItem>> _fetchRemote({
     LeadStage? stage,
+    int? stageId,
     String? query,
+    LeadType? recordType,
+    int offset = 0,
+    int limit = 25,
+    String order = 'create_date desc',
   }) async {
     final domain = <dynamic>[];
+    if (recordType != null) {
+      domain.add([
+        'type',
+        '=',
+        recordType == LeadType.lead ? 'lead' : 'opportunity',
+      ]);
+    }
     if (query != null && query.isNotEmpty) {
       domain.addAll([
         '|',
@@ -390,8 +687,13 @@ class LeadRepository {
         ['partner_name', 'ilike', query],
       ]);
     }
-    if (stage != null) {
-      domain.add(['stage_id.name', 'ilike', _stageOdooName(stage)]);
+    if (stageId != null) {
+      domain.add(['stage_id', '=', stageId]);
+    } else if (stage != null) {
+      final resolvedId = await _resolveStageId(stage);
+      if (resolvedId != null) {
+        domain.add(['stage_id', '=', resolvedId]);
+      }
     }
 
     final listLayout = await _loadMobileLayout('list');
@@ -411,8 +713,9 @@ class LeadRepository {
       args: [domain],
       kwargs: {
         'fields': fields,
-        'limit': 100,
-        'order': 'create_date desc',
+        'limit': limit,
+        'offset': offset,
+        'order': order,
       },
     );
 
@@ -586,11 +889,19 @@ class LeadRepository {
     }
 
     if (input.stage != null) {
-      final stageId = await _resolveStageId(input.stage!);
-      if (stageId != null) {
-        values['stage_id'] = stageId;
+      final resolvedStageId = await _resolveStageId(input.stage!);
+      if (resolvedStageId != null) {
+        values['stage_id'] = resolvedStageId;
       }
     }
+
+    if (input.source != null && input.source!.trim().isNotEmpty) {
+      final sourceId = await resolveSourceId(input.source!);
+      if (sourceId != null) {
+        values['source_id'] = sourceId;
+      }
+    }
+
     return values;
   }
 
@@ -692,6 +1003,7 @@ class LeadRepository {
   Future<List<LeadListItem>> _fetchMock({
     LeadStage? stage,
     String? query,
+    LeadType? recordType,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 400));
 
@@ -759,6 +1071,10 @@ class LeadRepository {
     ];
 
     var filtered = all;
+    if (recordType != null) {
+      filtered =
+          filtered.where((l) => l.recordType == recordType).toList();
+    }
     if (stage != null) {
       filtered = filtered.where((l) => l.stage == stage).toList();
     }

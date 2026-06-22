@@ -14,37 +14,30 @@ class QuickActions extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Expanded(
-          child: _ActionButton(
-            icon: Icons.person_add,
-            label: l10n.newLeadAction,
-            onTap: () => context.push(AppRoutes.createLead),
-          ),
+        _CircleAction(
+          icon: Icons.person_add_outlined,
+          label: l10n.newLeadAction,
+          onTap: () => context.push(AppRoutes.createLead),
         ),
-        const SizedBox(width: AppSizes.md),
-        Expanded(
-          child: _ActionButton(
-            icon: Icons.shopping_bag_outlined,
-            label: l10n.newOrderAction,
-            onTap: () => context.go(AppRoutes.orders),
-          ),
+        _CircleAction(
+          icon: Icons.shopping_bag_outlined,
+          label: l10n.newOrderAction,
+          onTap: () => context.go(AppRoutes.orders),
         ),
-        const SizedBox(width: AppSizes.md),
-        Expanded(
-          child: _ActionButton(
-            icon: Icons.search,
-            label: l10n.searchAction,
-            onTap: () => context.go(AppRoutes.leads),
-          ),
+        _CircleAction(
+          icon: Icons.search,
+          label: l10n.searchAction,
+          onTap: () => context.go(AppRoutes.leads),
         ),
       ],
     );
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  const _ActionButton({
+class _CircleAction extends StatelessWidget {
+  const _CircleAction({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -54,30 +47,45 @@ class _ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
+  static const _buttonSize = 52.0;
+
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.primary.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSizes.md,
-            horizontal: AppSizes.sm,
-          ),
+        borderRadius: BorderRadius.circular(_buttonSize),
+        child: SizedBox(
+          width: 88,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: AppColors.primary),
-              const SizedBox(height: AppSizes.sm),
+              Container(
+                width: _buttonSize,
+                height: _buttonSize,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryTintLight,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: AppSizes.borderWidth,
+                  ),
+                ),
+                child: Icon(icon, size: 22, color: AppColors.primary),
+              ),
+              const SizedBox(height: 6),
               Text(
                 label,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textTertiary,
+                  height: 1.2,
+                ),
               ),
             ],
           ),

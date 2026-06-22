@@ -4,6 +4,7 @@ import '../../../../app/constants/app_sizes.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/mobile_ui/mobile_ui_list_display.dart';
 import '../../../../core/mobile_ui/mobile_ui_schema.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../domain/lead.dart';
 import 'lead_stage_badge.dart';
 
@@ -32,14 +33,14 @@ class LeadCard extends StatelessWidget {
 
     final subtitle = useLayout
         ? MobileUiListDisplay.subtitle(listLayout!, record)
-        : null;
+        : (lead.companyName ?? '');
 
-    final lines = useLayout
+    final layoutLines = useLayout
         ? MobileUiListDisplay.lines(listLayout!, record)
-        : _legacyLines(lead);
+        : const <({IconData icon, String text})>[];
 
-    final stageColor = LeadStageBadge.colorFor(lead.stage);
-    final stageLabel = LeadStageBadge.labelFor(lead.stage);
+    final phone = lead.phone;
+    final timeLabel = AppFormatters.relative(lead.createdAt);
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSizes.md),
@@ -48,59 +49,116 @@ class LeadCard extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.md),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
+              _Avatar(initials: _initials(title), stage: lead.stage),
+              const SizedBox(width: AppSizes.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          title,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        if (subtitle != null && subtitle.isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            subtitle,
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: Theme.of(context)
                                 .textTheme
-                                .bodySmall
-                                ?.copyWith(color: AppColors.textSecondary),
+                                .titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
                           ),
-                        ],
+                        ),
+                        const SizedBox(width: AppSizes.sm),
+                        LeadStageBadge(
+                          stage: lead.stage,
+                          compact: true,
+                          labelOverride: lead.stageOdooName,
+                        ),
                       ],
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSizes.sm,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: stageColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                    ),
-                    child: Text(
-                      stageLabel,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: stageColor,
-                            fontWeight: FontWeight.w600,
+                    if (subtitle != null && subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ],
+                    if (layoutLines.isNotEmpty) ...[
+                      const SizedBox(height: AppSizes.sm),
+                      for (final line in layoutLines)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Row(
+                            children: [
+                              Icon(
+                                line.icon,
+                                size: 14,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  line.text,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: AppColors.textTertiary,
+                                      ),
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                    ] else if (phone.isNotEmpty) ...[
+                      const SizedBox(height: AppSizes.sm),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone_outlined,
+                            size: 15,
+                            color: AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              phone,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: AppColors.textTertiary),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        timeLabel,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: AppColors.textSecondary),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: AppSizes.sm),
-              for (var i = 0; i < lines.length; i++) ...[
-                if (i > 0) const SizedBox(height: AppSizes.xs),
-                _InfoRow(icon: lines[i].icon, text: lines[i].text),
-              ],
             ],
           ),
         ),
@@ -108,30 +166,44 @@ class LeadCard extends StatelessWidget {
     );
   }
 
-  List<({IconData icon, String text})> _legacyLines(Lead lead) => [
-        (icon: Icons.phone_outlined, text: lead.phone),
-        (icon: Icons.person_outline, text: lead.salesperson),
-        (icon: Icons.calendar_today_outlined, text: lead.createdAt.toString()),
-      ];
+  String _initials(String name) {
+    final parts = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((p) => p.isNotEmpty)
+        .toList();
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) {
+      final p = parts.first;
+      return (p.length >= 2 ? p.substring(0, 2) : p).toUpperCase();
+    }
+    return (parts.first[0] + parts.last[0]).toUpperCase();
+  }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.icon, required this.text});
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.initials, required this.stage});
 
-  final IconData icon;
-  final String text;
+  final String initials;
+  final LeadStage stage;
 
   @override
   Widget build(BuildContext context) {
-    if (text.isEmpty) return const SizedBox.shrink();
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
-        const SizedBox(width: AppSizes.sm),
-        Expanded(
-          child: Text(text, style: Theme.of(context).textTheme.bodySmall),
-        ),
-      ],
+    return Container(
+      width: 48,
+      height: 48,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: LeadStageBadge.backgroundFor(stage),
+        shape: BoxShape.circle,
+      ),
+      child: Text(
+        initials,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: LeadStageBadge.textColorFor(stage),
+              fontWeight: FontWeight.w600,
+            ),
+      ),
     );
   }
 }

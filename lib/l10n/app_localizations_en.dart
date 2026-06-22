@@ -15,10 +15,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTagline => 'Sales on the go';
 
   @override
-  String get loginTitle => 'Sign in';
+  String get loginTitle => 'Welcome back';
 
   @override
-  String get loginSubtitle => 'Connect to your Odoo instance';
+  String get loginSubtitle => 'Sign in to manage your pipeline';
 
   @override
   String get odooUrl => 'Odoo URL';
@@ -30,7 +30,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get username => 'Username';
 
   @override
-  String get emailOrUsername => 'Email / Username';
+  String get emailOrUsername => 'Email or username';
 
   @override
   String get password => 'Password';
@@ -39,7 +39,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rememberMe => 'Remember me';
 
   @override
-  String get login => 'Login';
+  String get login => 'Sign in';
+
+  @override
+  String get serverSettings => 'Server settings';
+
+  @override
+  String get orSeparator => 'or';
+
+  @override
+  String get useFaceId => 'Use Face ID';
+
+  @override
+  String get faceIdUnavailable =>
+      'Sign in once to enable Face ID on this device.';
 
   @override
   String get logout => 'Logout';
@@ -133,6 +146,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthlyRevenue => 'Monthly Revenue';
+
+  @override
+  String get pipelineValue => 'Pipeline value';
+
+  @override
+  String goodMorning(String name) {
+    return 'Good morning, $name';
+  }
+
+  @override
+  String goodAfternoon(String name) {
+    return 'Good afternoon, $name';
+  }
+
+  @override
+  String goodEvening(String name) {
+    return 'Good evening, $name';
+  }
 
   @override
   String get recentActivities => 'Recent Activities';
@@ -334,4 +365,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get version => 'Version 1.0.0';
+
+  @override
+  String get leadActions => 'Lead actions';
+
+  @override
+  String get markWon => 'Mark as won';
+
+  @override
+  String get markLost => 'Mark as lost';
+
+  @override
+  String get changeStage => 'Change stage';
+
+  @override
+  String get assignSalesperson => 'Assign salesperson';
+
+  @override
+  String get convertToOpportunity => 'Convert to opportunity';
+
+  @override
+  String get lostReason => 'Lost reason';
+
+  @override
+  String get selectOption => 'Select…';
+
+  @override
+  String get scheduleActivity => 'Schedule activity';
+
+  @override
+  String get scheduledActivities => 'Scheduled activities';
+
+  @override
+  String get activityHistory => 'Activity history';
+
+  @override
+  String get noScheduledActivities => 'No scheduled activities';
+
+  @override
+  String get activityType => 'Activity type';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get markDone => 'Done';
+
+  @override
+  String get pipeline => 'Pipeline';
+
+  @override
+  String get listView => 'List view';
+
+  @override
+  String get opportunities => 'Opportunities';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortNewest => 'Newest first';
+
+  @override
+  String get sortOldest => 'Oldest first';
+
+  @override
+  String get sortName => 'Name A–Z';
+
+  @override
+  String get sortRevenue => 'Highest revenue';
+
+  @override
+  String get sortPriority => 'Highest priority';
+
+  @override
+  String get messageAction => 'Message';
+
+  @override
+  String get infoTab => 'Info';
+
+  @override
+  String get notesTab => 'Notes';
+
+  @override
+  String get activityTab => 'Activity';
+
+  @override
+  String get noNotesYet => 'No notes yet';
 }

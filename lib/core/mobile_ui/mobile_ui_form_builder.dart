@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/constants/app_sizes.dart';
+import '../../app/theme/app_colors.dart';
 import 'mobile_ui_field_renderer.dart';
 import 'mobile_ui_form_context.dart';
 import 'mobile_ui_schema.dart';
@@ -35,27 +36,33 @@ class MobileUiFormBuilder extends StatelessWidget {
 
     final children = <Widget>[];
 
+    var isFirstSection = true;
     for (final section in layout.sections) {
       final fields = section.fields.where((field) => !field.readonly).toList();
       if (fields.isEmpty) continue;
 
       children.add(
         Padding(
-          padding: const EdgeInsets.only(bottom: AppSizes.sm),
+          padding: EdgeInsets.only(
+            top: isFirstSection ? 0 : AppSizes.lg,
+            bottom: AppSizes.sm,
+          ),
           child: Text(
             section.title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0,
                 ),
           ),
         ),
       );
+      isFirstSection = false;
 
       for (final field in fields) {
         children.add(renderer.build(field));
         children.add(const SizedBox(height: AppSizes.md));
       }
-      children.add(const SizedBox(height: AppSizes.sm));
     }
 
     return Column(

@@ -109,13 +109,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in'**
+  /// **'Welcome back'**
   String get loginTitle;
 
   /// No description provided for @loginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Connect to your Odoo instance'**
+  /// **'Sign in to manage your pipeline'**
   String get loginSubtitle;
 
   /// No description provided for @odooUrl.
@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// No description provided for @emailOrUsername.
   ///
   /// In en, this message translates to:
-  /// **'Email / Username'**
+  /// **'Email or username'**
   String get emailOrUsername;
 
   /// No description provided for @password.
@@ -157,8 +157,32 @@ abstract class AppLocalizations {
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
+  /// **'Sign in'**
   String get login;
+
+  /// No description provided for @serverSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Server settings'**
+  String get serverSettings;
+
+  /// No description provided for @orSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orSeparator;
+
+  /// No description provided for @useFaceId.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Face ID'**
+  String get useFaceId;
+
+  /// No description provided for @faceIdUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in once to enable Face ID on this device.'**
+  String get faceIdUnavailable;
 
   /// No description provided for @logout.
   ///
@@ -345,6 +369,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Monthly Revenue'**
   String get monthlyRevenue;
+
+  /// No description provided for @pipelineValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline value'**
+  String get pipelineValue;
+
+  /// No description provided for @goodMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning, {name}'**
+  String goodMorning(String name);
+
+  /// No description provided for @goodAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon, {name}'**
+  String goodAfternoon(String name);
+
+  /// No description provided for @goodEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening, {name}'**
+  String goodEvening(String name);
 
   /// No description provided for @recentActivities.
   ///
@@ -741,6 +789,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Version 1.0.0'**
   String get version;
+
+  /// No description provided for @leadActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead actions'**
+  String get leadActions;
+
+  /// No description provided for @markWon.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as won'**
+  String get markWon;
+
+  /// No description provided for @markLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as lost'**
+  String get markLost;
+
+  /// No description provided for @changeStage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change stage'**
+  String get changeStage;
+
+  /// No description provided for @assignSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign salesperson'**
+  String get assignSalesperson;
+
+  /// No description provided for @convertToOpportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Convert to opportunity'**
+  String get convertToOpportunity;
+
+  /// No description provided for @lostReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Lost reason'**
+  String get lostReason;
+
+  /// No description provided for @selectOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Select…'**
+  String get selectOption;
+
+  /// No description provided for @scheduleActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule activity'**
+  String get scheduleActivity;
+
+  /// No description provided for @scheduledActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled activities'**
+  String get scheduledActivities;
+
+  /// No description provided for @activityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity history'**
+  String get activityHistory;
+
+  /// No description provided for @noScheduledActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'No scheduled activities'**
+  String get noScheduledActivities;
+
+  /// No description provided for @activityType.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity type'**
+  String get activityType;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @markDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get markDone;
+
+  /// No description provided for @pipeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Pipeline'**
+  String get pipeline;
+
+  /// No description provided for @listView.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get listView;
+
+  /// No description provided for @opportunities.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunities'**
+  String get opportunities;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get sortNewest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest first'**
+  String get sortOldest;
+
+  /// No description provided for @sortName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name A–Z'**
+  String get sortName;
+
+  /// No description provided for @sortRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest revenue'**
+  String get sortRevenue;
+
+  /// No description provided for @sortPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest priority'**
+  String get sortPriority;
+
+  /// No description provided for @messageAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageAction;
+
+  /// No description provided for @infoTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get infoTab;
+
+  /// No description provided for @notesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notesTab;
+
+  /// No description provided for @activityTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTab;
+
+  /// No description provided for @noNotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notes yet'**
+  String get noNotesYet;
 }
 
 class _AppLocalizationsDelegate

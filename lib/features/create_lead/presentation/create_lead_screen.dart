@@ -158,6 +158,8 @@ class _CreateLeadScreenState extends ConsumerState<CreateLeadScreen> {
   }
 
   Future<dynamic> _saveLegacy() async {
+    final repo = ref.read(leadRepositoryProvider);
+    final sourceId = await repo.resolveSourceId(_source);
     final values = <String, dynamic>{
       'partner_name': _nameController.text.trim(),
       'phone': _phoneController.text.trim(),
@@ -165,6 +167,7 @@ class _CreateLeadScreenState extends ConsumerState<CreateLeadScreen> {
       'description': _noteController.text.trim().isEmpty
           ? false
           : _noteController.text.trim(),
+      if (sourceId != null) 'source_id': sourceId,
     };
     return ref.read(createLeadControllerProvider.notifier).saveValues(
           formValues: values,

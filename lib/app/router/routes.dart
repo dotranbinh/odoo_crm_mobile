@@ -3,6 +3,7 @@ abstract final class AppRoutes {
   static const login = '/login';
   static const dashboard = '/dashboard';
   static const leads = '/leads';
+  static const leadPipeline = '/leads/pipeline';
   static const leadDetail = '/leads/:id';
   static String leadDetailFor(int id) => '/leads/$id';
   static String leadEditFor(int id) => '/leads/$id/edit';

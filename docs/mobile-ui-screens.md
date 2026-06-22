@@ -280,6 +280,8 @@ Trong [`lib/app/constants/app_config.dart`](../lib/app/constants/app_config.dart
 
 | Tài liệu | Nội dung |
 |----------|----------|
+| [screens/README.md](screens/README.md) | **Mô tả tính năng & thiết kế từng màn hình** (1 file / màn) |
+| [design.md](../design.md) | Design spec màu sắc, typography, components |
 | [README.md](../README.md) | Chạy app, CORS, flags |
 | [odoo_addons/crm_mobile_ui/README.md](../odoo_addons/crm_mobile_ui/README.md) | API `get_mobile_layout` |
 | [data/reference/README.md](../odoo_addons/crm_mobile_ui/data/reference/README.md) | JSON layout đầy đủ, giới hạn field |

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odoo CRM Mobile — Redesign Mockup</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#F0F0F2;
+  --color-text-primary:#1C1C1E;
+  --color-text-secondary:#6B6B70;
+}
+body{margin:0;padding:24px 0;background:#F5F5F7;font-family:var(--font-sans);}
+.scr{padding:0 18px 18px;font-family:var(--font-sans);}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:0.5px solid #E5E1EA;}
+.row:last-child{border-bottom:none;}
+.lbl{font-size:12px;color:#8E8E93;margin-bottom:2px;}
+.val{font-size:15px;color:#1C1C1E;}
+.card{background:#fff;border:0.5px solid #E5E1EA;border-radius:16px;padding:14px 16px;margin-bottom:12px;}
+.tabbtn{flex:1;padding:8px 0;border-radius:10px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--color-text-secondary);}
+.tabbtn.on{background:var(--color-background-primary);color:var(--color-text-primary);}
+.uline{font-size:13px;font-weight:500;color:#8E8E93;padding:8px 0;border-bottom:2px solid transparent;white-space:nowrap;cursor:pointer;}
+.uline.on{color:#3C3489;border-bottom:2px solid #534AB7;}
+.navicon{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:#9C9CA1;}
+.navicon.on{color:#3C3489;}
+.navicon i{font-size:20px;}
+.circbtn{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;}
+.navwrap{position:relative;margin-top:28px;padding-top:14px;border-top:0.5px solid #E5E1EA;}
+.navgrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;justify-items:center;align-items:center;}
+.fab{position:absolute;left:50%;top:-22px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:#534AB7;border:4px solid #fff;display:flex;align-items:center;justify-content:center;}
+</style>
+</head>
+<body>
+
+<div style="max-width:400px;margin:0 auto;">
+  <div style="display:flex;gap:4px;background:var(--color-background-secondary);padding:4px;border-radius:14px;margin-bottom:16px;">
+    <button class="tabbtn on" data-target="signin">Sign in</button>
+    <button class="tabbtn" data-target="dashboard">Dashboard</button>
+    <button class="tabbtn" data-target="leads">Leads</button>
+    <button class="tabbtn" data-target="detail">Detail</button>
+  </div>
+
+  <div style="background:#1C1C1E;border-radius:44px;padding:10px;">
+    <div style="background:#fff;border-radius:36px;overflow:hidden;min-height:700px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 24px 2px;font-size:13px;font-weight:500;color:#1C1C1E;">
+        <span>9:41</span>
+        <div style="display:flex;gap:5px;align-items:center;">
+          <i class="ti ti-wifi" style="font-size:14px;"></i>
+          <i class="ti ti-battery-3" style="font-size:16px;"></i>
+        </div>
+      </div>
+
+      <div class="scr" id="signin">
+        <div style="display:flex;align-items:center;gap:12px;padding:28px 0 22px;">
+          <div style="width:48px;height:48px;border-radius:14px;background:#EEEDFE;display:flex;align-items:center;justify-content:center;">
+            <i class="ti ti-building-store" style="font-size:22px;color:#534AB7;"></i>
+          </div>
+          <div>
+            <h1 style="font-size:20px;font-weight:500;margin:0;color:#1C1C1E;">Welcome back</h1>
+            <p style="font-size:13px;color:#8E8E93;margin:2px 0 0;">Sign in to manage your pipeline</p>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <div class="lbl" style="margin-bottom:6px;">Email or username</div>
+          <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #E5E1EA;border-radius:12px;padding:11px 14px;">
+            <i class="ti ti-user" style="font-size:16px;color:#8E8E93;"></i>
+            <span style="font-size:15px;color:#1C1C1E;">admin</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <div class="lbl" style="margin-bottom:6px;">Password</div>
+          <div style="display:flex;align-items:center;gap:8px;border:0.5px solid #E5E1EA;border-radius:12px;padding:11px 14px;">
+            <i class="ti ti-lock" style="font-size:16px;color:#8E8E93;"></i>
+            <span id="pwdValue" style="font-size:15px;color:#1C1C1E;flex:1;">••••••••••</span>
+            <i id="eyeIcon" class="ti ti-eye" style="font-size:16px;color:#8E8E93;cursor:pointer;"></i>
+          </div>
+        </div>
+
+        <div id="serverToggle" style="display:flex;align-items:center;justify-content:space-between;padding:10px 2px;cursor:pointer;">
+          <span style="font-size:13px;color:#8E8E93;"><i class="ti ti-server" style="font-size:14px;margin-right:5px;"></i>Server settings</span>
+          <i id="serverChevron" class="ti ti-chevron-down" style="font-size:15px;color:#8E8E93;transition:transform .15s;"></i>
+        </div>
+        <div id="serverPanel" style="margin-bottom:6px;">
+          <div class="card" style="padding:2px 14px;margin-top:6px;">
+            <div class="row"><div><div class="lbl">Odoo URL</div><div class="val">localhost:8069</div></div></div>
+            <div class="row"><div><div class="lbl">Database</div><div class="val">dev1</div></div></div>
+          </div>
+        </div>
+
+        <button style="width:100%;padding:14px;border-radius:14px;background:#534AB7;color:#fff;border:none;font-size:16px;font-weight:500;margin-top:16px;">Sign in</button>
+
+        <div style="display:flex;align-items:center;gap:8px;margin:18px 0;">
+          <div style="flex:1;height:0.5px;background:#E5E1EA;"></div>
+          <span style="font-size:12px;color:#8E8E93;">or</span>
+          <div style="flex:1;height:0.5px;background:#E5E1EA;"></div>
+        </div>
+
+        <button style="width:100%;padding:13px;border-radius:14px;background:#fff;border:0.5px solid #E5E1EA;color:#1C1C1E;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <i class="ti ti-fingerprint" style="font-size:18px;color:#534AB7;"></i>Use Face ID
+        </button>
+      </div>
+
+      <div class="scr" id="dashboard">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 4px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#EEEDFE;color:#3C3489;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;">A</div>
+            <div>
+              <div style="font-size:12px;color:#8E8E93;">Good afternoon</div>
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E;">Administrator</div>
+            </div>
+          </div>
+          <div style="position:relative;">
+            <i class="ti ti-bell" style="font-size:20px;color:#1C1C1E;"></i>
+            <div style="width:7px;height:7px;border-radius:50%;background:#D85A30;position:absolute;top:-1px;right:-1px;"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="lbl">Pipeline value</div>
+          <div style="font-size:26px;font-weight:500;color:#1C1C1E;margin-bottom:10px;">$84.2K</div>
+          <div style="height:8px;border-radius:999px;overflow:hidden;display:flex;margin-bottom:10px;">
+            <div style="width:48%;background:#7F77DD;"></div>
+            <div style="width:32%;background:#EF9F27;"></div>
+            <div style="width:20%;background:#1D9E75;"></div>
+          </div>
+          <div style="display:flex;gap:14px;font-size:12px;color:#5A5A5E;">
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#7F77DD;margin-right:4px;"></span>New 62</span>
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#EF9F27;margin-right:4px;"></span>Qualified 41</span>
+            <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#1D9E75;margin-right:4px;"></span>Won 25</span>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;padding:14px 0;">
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:19px;font-weight:500;color:#1C1C1E;">128</div>
+            <div style="font-size:11px;color:#8E8E93;">Total leads</div>
+          </div>
+          <div style="flex:1;text-align:center;border-left:0.5px solid #E5E1EA;">
+            <div style="font-size:19px;font-weight:500;color:#1C1C1E;">24</div>
+            <div style="font-size:11px;color:#8E8E93;">New leads</div>
+          </div>
+          <div style="flex:1;text-align:center;border-left:0.5px solid #E5E1EA;">
+            <div style="font-size:19px;font-weight:500;color:#1C1C1E;">56</div>
+            <div style="font-size:11px;color:#8E8E93;">Orders</div>
+          </div>
+        </div>
+
+        <div style="margin:18px 0 10px;font-size:15px;font-weight:500;color:#1C1C1E;">Quick actions</div>
+        <div style="display:flex;gap:18px;margin-bottom:18px;">
+          <div style="text-align:center;"><div class="circbtn" style="background:#EEEDFE;"><i class="ti ti-user-plus" style="font-size:19px;color:#534AB7;"></i></div><span style="font-size:11px;color:#5A5A5E;">New lead</span></div>
+          <div style="text-align:center;"><div class="circbtn" style="background:#EEEDFE;"><i class="ti ti-shopping-bag" style="font-size:19px;color:#534AB7;"></i></div><span style="font-size:11px;color:#5A5A5E;">New order</span></div>
+          <div style="text-align:center;"><div class="circbtn" style="background:#EEEDFE;"><i class="ti ti-search" style="font-size:19px;color:#534AB7;"></i></div><span style="font-size:11px;color:#5A5A5E;">Search</span></div>
+        </div>
+
+        <div style="font-size:15px;font-weight:500;color:#1C1C1E;margin-bottom:8px;">Recent activity</div>
+        <div style="display:flex;gap:10px;">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#534AB7;"></div>
+            <div style="width:1px;flex:1;background:#E5E1EA;margin:4px 0;"></div>
+            <div style="width:8px;height:8px;border-radius:50%;background:#D3D1C7;"></div>
+          </div>
+          <div style="flex:1;">
+            <div style="margin-bottom:14px;">
+              <div style="font-size:13px;color:#1C1C1E;">New lead: Nguyen Van A</div>
+              <div style="font-size:11px;color:#8E8E93;">Today, 09:12</div>
+            </div>
+            <div>
+              <div style="font-size:13px;color:#1C1C1E;">Order #1042 confirmed</div>
+              <div style="font-size:11px;color:#8E8E93;">Yesterday, 17:40</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navwrap">
+          <div class="navgrid">
+            <div class="navicon on"><i class="ti ti-layout-grid"></i>Home</div>
+            <div class="navicon"><i class="ti ti-users"></i>Leads</div>
+            <div></div>
+            <div class="navicon"><i class="ti ti-shopping-bag"></i>Orders</div>
+            <div class="navicon"><i class="ti ti-user"></i>Profile</div>
+          </div>
+          <div class="fab"><i class="ti ti-plus" style="font-size:22px;color:#fff;"></i></div>
+        </div>
+      </div>
+
+      <div class="scr" id="leads">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:16px 0 14px;">
+          <h1 style="font-size:20px;font-weight:500;margin:0;color:#1C1C1E;">Leads</h1>
+          <span style="font-size:13px;color:#8E8E93;">128 total</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;background:#F7F7F8;border-radius:12px;padding:9px 12px;margin-bottom:14px;">
+          <i class="ti ti-search" style="font-size:16px;color:#8E8E93;"></i>
+          <span style="font-size:14px;color:#8E8E93;">Search leads</span>
+        </div>
+
+        <div style="display:flex;gap:16px;border-bottom:0.5px solid #E5E1EA;margin-bottom:14px;">
+          <span class="uline on">All</span>
+          <span class="uline">New</span>
+          <span class="uline">Qualified</span>
+          <span class="uline">Won</span>
+          <span class="uline">Lost</span>
+        </div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#EEEDFE;color:#3C3489;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">AD</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;">
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E;">Anh Do</div>
+              <span style="font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background:#EEEDFE;color:#3C3489;">New</span>
+            </div>
+            <div style="font-size:12px;color:#8E8E93;margin-bottom:6px;">Hung Vuong</div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#5A5A5E;">
+              <span><i class="ti ti-phone" style="font-size:12px;margin-right:4px;"></i>098 774 343</span>
+              <span>2 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#FAEEDA;color:#633806;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">DT</div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;">
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E;">DoTB</div>
+              <span style="font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background:#FAEEDA;color:#633806;">Qualified</span>
+            </div>
+            <div style="font-size:12px;color:#8E8E93;margin-bottom:6px;">My company</div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:#5A5A5E;">
+              <span><i class="ti ti-phone" style="font-size:12px;margin-right:4px;"></i>094 324 345</span>
+              <span>12 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="navwrap">
+          <div class="navgrid">
+            <div class="navicon"><i class="ti ti-layout-grid"></i>Home</div>
+            <div class="navicon on"><i class="ti ti-users"></i>Leads</div>
+            <div></div>
+            <div class="navicon"><i class="ti ti-shopping-bag"></i>Orders</div>
+            <div class="navicon"><i class="ti ti-user"></i>Profile</div>
+          </div>
+          <div class="fab"><i class="ti ti-plus" style="font-size:22px;color:#fff;"></i></div>
+        </div>
+      </div>
+
+      <div class="scr" id="detail">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 6px;">
+          <i class="ti ti-arrow-left" style="font-size:18px;color:#1C1C1E;"></i>
+          <span style="font-size:13px;color:#8E8E93;">Leads</span>
+          <i class="ti ti-edit" style="font-size:18px;color:#1C1C1E;"></i>
+        </div>
+
+        <div style="text-align:center;padding:14px 0 16px;">
+          <div style="width:64px;height:64px;border-radius:50%;background:#EEEDFE;color:#3C3489;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;margin:0 auto 10px;">AD</div>
+          <div style="font-size:18px;font-weight:500;color:#1C1C1E;">Anh Do</div>
+          <div style="font-size:13px;color:#8E8E93;margin-bottom:8px;">Hung Vuong</div>
+          <span style="font-size:11px;font-weight:500;padding:4px 10px;border-radius:999px;background:#EEEDFE;color:#3C3489;">New</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-around;margin-bottom:18px;">
+          <div style="text-align:center;"><div class="circbtn" style="background:#E1F5EE;"><i class="ti ti-phone" style="font-size:18px;color:#085041;"></i></div><span style="font-size:11px;color:#5A5A5E;">Call</span></div>
+          <div style="text-align:center;"><div class="circbtn" style="background:#F7F7F8;"><i class="ti ti-message-circle" style="font-size:18px;color:#5A5A5E;"></i></div><span style="font-size:11px;color:#5A5A5E;">Message</span></div>
+          <div style="text-align:center;"><div class="circbtn" style="background:#F7F7F8;"><i class="ti ti-mail" style="font-size:18px;color:#5A5A5E;"></i></div><span style="font-size:11px;color:#5A5A5E;">Email</span></div>
+        </div>
+
+        <div style="display:flex;gap:18px;border-bottom:0.5px solid #E5E1EA;margin-bottom:14px;">
+          <span class="uline subtab on" data-sub="sub-info">Info</span>
+          <span class="uline subtab" data-sub="sub-notes">Notes</span>
+          <span class="uline subtab" data-sub="sub-activity">Activity</span>
+        </div>
+
+        <div class="subscr" id="sub-info">
+          <div style="font-size:13px;font-weight:500;color:#8E8E93;margin-bottom:6px;">Contact</div>
+          <div class="card">
+            <div class="row"><div><div class="lbl">Phone</div><div class="val">098 774 343</div></div><i class="ti ti-copy" style="font-size:15px;color:#8E8E93;"></i></div>
+            <div class="row"><div><div class="lbl">Mobile</div><div class="val">098 434 343</div></div><i class="ti ti-copy" style="font-size:15px;color:#8E8E93;"></i></div>
+          </div>
+
+          <div style="font-size:13px;font-weight:500;color:#8E8E93;margin:14px 0 6px;">Address</div>
+          <div class="card">
+            <div class="row"><div><div class="lbl">Street</div><div class="val">Hoang Mai, Ha Noi</div></div></div>
+            <div class="row"><div><div class="lbl">Country</div><div class="val">Vietnam</div></div></div>
+          </div>
+
+          <div style="font-size:13px;font-weight:500;color:#8E8E93;margin:14px 0 6px;">Opportunity</div>
+          <div class="card">
+            <div class="row"><div><div class="lbl">Stage</div><div class="val">New</div></div></div>
+          </div>
+        </div>
+
+        <div class="subscr" id="sub-notes" style="text-align:center;padding:32px 0;color:#8E8E93;display:none;">
+          <i class="ti ti-notes" style="font-size:26px;"></i>
+          <div style="font-size:13px;margin-top:8px;">No notes yet</div>
+        </div>
+
+        <div class="subscr" id="sub-activity" style="display:none;">
+          <div style="display:flex;gap:10px;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#534AB7;"></div>
+              <div style="width:1px;flex:1;background:#E5E1EA;margin:4px 0;"></div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#D3D1C7;"></div>
+            </div>
+            <div style="flex:1;">
+              <div style="margin-bottom:14px;">
+                <div style="font-size:13px;color:#1C1C1E;">Lead created</div>
+                <div style="font-size:11px;color:#8E8E93;">31 May, 07:43</div>
+              </div>
+              <div>
+                <div style="font-size:13px;color:#1C1C1E;">Assigned to Administrator</div>
+                <div style="font-size:11px;color:#8E8E93;">31 May, 07:44</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="navwrap">
+          <div class="navgrid">
+            <div class="navicon"><i class="ti ti-layout-grid"></i>Home</div>
+            <div class="navicon on"><i class="ti ti-users"></i>Leads</div>
+            <div></div>
+            <div class="navicon"><i class="ti ti-shopping-bag"></i>Orders</div>
+            <div class="navicon"><i class="ti ti-user"></i>Profile</div>
+          </div>
+          <div class="fab"><i class="ti ti-plus" style="font-size:22px;color:#fff;"></i></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const screens=document.querySelectorAll('.scr');
+const tabs=document.querySelectorAll('.tabbtn');
+function showScreen(id){
+  screens.forEach(function(s){ s.style.display=(s.id===id)?'block':'none'; });
+  tabs.forEach(function(t){ t.classList.toggle('on', t.dataset.target===id); });
+}
+tabs.forEach(function(t){ t.addEventListener('click', function(){ showScreen(t.dataset.target); }); });
+showScreen('signin');
+
+const serverPanel=document.getElementById('serverPanel');
+const serverChevron=document.getElementById('serverChevron');
+serverPanel.style.display='none';
+document.getElementById('serverToggle').addEventListener('click', function(){
+  const open = serverPanel.style.display==='block';
+  serverPanel.style.display = open ? 'none' : 'block';
+  serverChevron.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+});
+
+const eyeIcon=document.getElementById('eyeIcon');
+const pwdValue=document.getElementById('pwdValue');
+let pwdShown=false;
+eyeIcon.addEventListener('click', function(){
+  pwdShown=!pwdShown;
+  pwdValue.textContent = pwdShown ? 'OdooPass123' : '••••••••••';
+  eyeIcon.className = pwdShown ? 'ti ti-eye-off' : 'ti ti-eye';
+});
+
+const subtabs=document.querySelectorAll('.subtab');
+const subscreens=document.querySelectorAll('.subscr');
+function showSub(id){
+  subscreens.forEach(function(s){ s.style.display=(s.id===id)?'block':'none'; });
+  subtabs.forEach(function(t){ t.classList.toggle('on', t.dataset.sub===id); });
+}
+subtabs.forEach(function(t){ t.addEventListener('click', function(){ showSub(t.dataset.sub); }); });
+showSub('sub-info');
+</script>
+</body>
+</html>

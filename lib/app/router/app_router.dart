@@ -7,6 +7,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/splash_screen.dart';
 import '../../features/create_lead/presentation/create_lead_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/lead/presentation/lead_pipeline_screen.dart';
 import '../../features/lead/presentation/edit_lead_screen.dart';
 import '../../features/lead/presentation/lead_detail_screen.dart';
 import '../../features/lead/presentation/lead_list_screen.dart';
@@ -87,6 +88,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoutes.leads,
                 builder: (context, state) => const LeadListScreen(),
                 routes: [
+                  GoRoute(
+                    path: 'pipeline',
+                    builder: (context, state) => const LeadPipelineScreen(),
+                  ),
                   GoRoute(
                     path: ':id',
                     builder: (context, state) {

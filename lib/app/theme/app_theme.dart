@@ -47,22 +47,52 @@ abstract final class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: isDark ? const Color(0xFF2A2A36) : Colors.white,
+        fillColor: isDark ? const Color(0xFF2A2A36) : AppColors.card,
+        labelStyle: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          color: isDark ? Colors.white70 : AppColors.textSecondary,
+        ),
+        floatingLabelStyle: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+          color: AppColors.textSecondary,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: const BorderSide(
+            color: AppColors.border,
+            width: AppSizes.borderWidth,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          borderSide: const BorderSide(color: AppColors.divider),
+          borderSide: BorderSide(
+            color: isDark ? Colors.white12 : AppColors.border,
+            width: AppSizes.borderWidth,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderSide: const BorderSide(
+            color: AppColors.statusLostText,
+            width: AppSizes.borderWidth,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          borderSide: const BorderSide(
+            color: AppColors.statusLostText,
+            width: 1.5,
+          ),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSizes.md,
-          vertical: AppSizes.md,
+          vertical: 14,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

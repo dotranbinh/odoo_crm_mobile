@@ -38,6 +38,29 @@ _Lead _$LeadFromJson(Map<String, dynamic> json) => _Lead(
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const <String>[],
+  recordType:
+      $enumDecodeNullable(_$LeadTypeEnumMap, json['recordType']) ??
+      LeadType.lead,
+  active: json['active'] as bool? ?? true,
+  stageOdooId: (json['stageOdooId'] as num?)?.toInt(),
+  stageOdooName: json['stageOdooName'] as String?,
+  userId: (json['userId'] as num?)?.toInt(),
+  contactName: json['contactName'] as String?,
+  partnerId: (json['partnerId'] as num?)?.toInt(),
+  teamId: (json['teamId'] as num?)?.toInt(),
+  teamName: json['teamName'] as String?,
+  lostReasonId: (json['lostReasonId'] as num?)?.toInt(),
+  lostReasonName: json['lostReasonName'] as String?,
+  dateClosed: json['dateClosed'] == null
+      ? null
+      : DateTime.parse(json['dateClosed'] as String),
+  recurringRevenue: (json['recurringRevenue'] as num?)?.toDouble(),
+  street2: json['street2'] as String?,
+  zip: json['zip'] as String?,
+  stateName: json['stateName'] as String?,
+  mediumName: json['mediumName'] as String?,
+  campaignName: json['campaignName'] as String?,
+  currencySymbol: json['currencySymbol'] as String?,
 );
 
 Map<String, dynamic> _$LeadToJson(_Lead instance) => <String, dynamic>{
@@ -64,6 +87,25 @@ Map<String, dynamic> _$LeadToJson(_Lead instance) => <String, dynamic>{
   'dateDeadline': instance.dateDeadline?.toIso8601String(),
   'lastUpdated': instance.lastUpdated?.toIso8601String(),
   'tags': instance.tags,
+  'recordType': _$LeadTypeEnumMap[instance.recordType]!,
+  'active': instance.active,
+  'stageOdooId': instance.stageOdooId,
+  'stageOdooName': instance.stageOdooName,
+  'userId': instance.userId,
+  'contactName': instance.contactName,
+  'partnerId': instance.partnerId,
+  'teamId': instance.teamId,
+  'teamName': instance.teamName,
+  'lostReasonId': instance.lostReasonId,
+  'lostReasonName': instance.lostReasonName,
+  'dateClosed': instance.dateClosed?.toIso8601String(),
+  'recurringRevenue': instance.recurringRevenue,
+  'street2': instance.street2,
+  'zip': instance.zip,
+  'stateName': instance.stateName,
+  'mediumName': instance.mediumName,
+  'campaignName': instance.campaignName,
+  'currencySymbol': instance.currencySymbol,
 };
 
 const _$LeadStageEnumMap = {
@@ -79,4 +121,9 @@ const _$LeadPriorityEnumMap = {
   LeadPriority.normal: 1,
   LeadPriority.high: 2,
   LeadPriority.veryHigh: 3,
+};
+
+const _$LeadTypeEnumMap = {
+  LeadType.lead: 'lead',
+  LeadType.opportunity: 'opportunity',
 };

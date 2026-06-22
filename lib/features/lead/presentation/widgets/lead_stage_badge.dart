@@ -8,10 +8,12 @@ class LeadStageBadge extends StatelessWidget {
     required this.stage,
     super.key,
     this.compact = false,
+    this.labelOverride,
   });
 
   final LeadStage stage;
   final bool compact;
+  final String? labelOverride;
 
   static Color colorFor(LeadStage stage) => switch (stage) {
         LeadStage.newLead => AppColors.primary,
@@ -19,6 +21,22 @@ class LeadStageBadge extends StatelessWidget {
         LeadStage.proposition => const Color(0xFF17A2B8),
         LeadStage.won => AppColors.success,
         LeadStage.lost => AppColors.danger,
+      };
+
+  static Color backgroundFor(LeadStage stage) => switch (stage) {
+        LeadStage.newLead => AppColors.statusNewBg,
+        LeadStage.qualified => AppColors.statusQualifiedBg,
+        LeadStage.proposition => const Color(0xFFE3F1F4),
+        LeadStage.won => AppColors.statusWonBg,
+        LeadStage.lost => AppColors.statusLostBg,
+      };
+
+  static Color textColorFor(LeadStage stage) => switch (stage) {
+        LeadStage.newLead => AppColors.statusNewText,
+        LeadStage.qualified => AppColors.statusQualifiedText,
+        LeadStage.proposition => const Color(0xFF0E5A6B),
+        LeadStage.won => AppColors.statusWonText,
+        LeadStage.lost => AppColors.statusLostText,
       };
 
   static String labelFor(LeadStage stage) => switch (stage) {
@@ -31,18 +49,18 @@ class LeadStageBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = colorFor(stage);
-    final label = labelFor(stage);
+    final background = backgroundFor(stage);
+    final textColor = textColorFor(stage);
+    final label = labelOverride ?? labelFor(stage);
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 12,
-        vertical: compact ? 3 : 6,
+        horizontal: compact ? 10 : 12,
+        vertical: compact ? 4 : 6,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(compact ? 8 : 12),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        color: background,
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
@@ -50,8 +68,8 @@ class LeadStageBadge extends StatelessWidget {
                 ? Theme.of(context).textTheme.labelSmall
                 : Theme.of(context).textTheme.labelMedium)
             ?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
+          color: textColor,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
