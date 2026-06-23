@@ -262,7 +262,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactInfo => 'Contact information';
 
   @override
-  String get salesInfo => 'Sales information';
+  String get salesInfo => 'Sales info';
 
   @override
   String get description => 'Description';
@@ -452,4 +452,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noNotesYet => 'No notes yet';
+
+  @override
+  String get newQuotation => 'New quotation';
+
+  @override
+  String get createQuotation => 'Create quotation';
+
+  @override
+  String get orderLines => 'Order lines';
+
+  @override
+  String get addLine => 'Add line';
+
+  @override
+  String get product => 'Product';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get unitPrice => 'Unit price';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get customerRequired => 'Customer is required';
+
+  @override
+  String get atLeastOneLine => 'Add at least one order line';
+
+  @override
+  String get quotationInfo => 'Quotation info';
+
+  @override
+  String get origin => 'Origin';
+
+  @override
+  String get validityDate => 'Validity date';
+
+  @override
+  String get clientOrderRef => 'Customer reference';
+
+  @override
+  String get salesTeam => 'Sales team';
+
+  @override
+  String get pricelist => 'Pricelist';
+
+  @override
+  String get paymentTerm => 'Payment terms';
+
+  @override
+  String get createCustomer => 'Create customer';
+
+  @override
+  String get selectCustomer => 'Select customer';
+
+  @override
+  String get searchProducts => 'Search products…';
+
+  @override
+  String get searchCustomers => 'Search customers…';
+
+  @override
+  String get sent => 'Sent';
+
+  @override
+  String get sale => 'Sales order';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get comingSoon => 'Detail screen coming soon';
+
+  @override
+  String quotationCreated(String number) {
+    return 'Quotation $number created';
+  }
+
+  @override
+  String get orderDetailTitle => 'Order details';
+
+  @override
+  String get editOrder => 'Edit order';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get opportunity => 'Opportunity';
+
+  @override
+  String get noOrderLines => 'No order lines';
+
+  @override
+  String orderUpdated(String number) {
+    return 'Order $number updated';
+  }
+
+  @override
+  String get orderNotEditable => 'This order cannot be edited';
 }

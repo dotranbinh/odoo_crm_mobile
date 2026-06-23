@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../app/constants/app_sizes.dart';
+import '../../../../app/router/routes.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/lead_repository.dart';
@@ -142,6 +144,16 @@ class _LeadActionsSheetState extends ConsumerState<LeadActionsSheet> {
                 label: l10n.convertToOpportunity,
                 enabled: !_busy,
                 onTap: () => _run(() => repo.convertToOpportunity(lead.id)),
+              ),
+            if (lead.stage != LeadStage.lost)
+              _ActionTile(
+                icon: Icons.request_quote_outlined,
+                label: l10n.newQuotation,
+                enabled: !_busy,
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(AppRoutes.createOrderForLead(lead.id));
+                },
               ),
           ],
         ),

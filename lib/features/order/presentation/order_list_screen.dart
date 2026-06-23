@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/constants/app_sizes.dart';
+import '../../../app/router/routes.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../../../core/widgets/search_field.dart';
-import '../../../core/widgets/status_chip.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/order_list_controller.dart';
 import '../domain/order.dart';
 import 'widgets/order_card.dart';
+import 'widgets/order_status_tabs.dart';
 
 class OrderListScreen extends ConsumerWidget {
   const OrderListScreen({super.key});
@@ -23,64 +26,68 @@ class OrderListScreen extends ConsumerWidget {
     final tabLabels = <OrderStatus?, String>{
       null: l10n.all,
       OrderStatus.draft: l10n.draft,
-      OrderStatus.confirmed: l10n.confirmed,
-      OrderStatus.done: l10n.done,
+      OrderStatus.sent: l10n.sent,
+      OrderStatus.sale: l10n.sale,
+      OrderStatus.cancel: l10n.cancelled,
     };
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.orders)),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: SearchField(
-              hint: l10n.searchOrders,
-              onChanged: (q) => ref
-                  .read(orderListControllerProvider.notifier)
-                  .setQuery(q),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-            child: SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: tabLabels.entries.map((entry) {
-                  final isSelected = state.selectedStatus == entry.key;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: AppSizes.sm),
-                    child: StatusChip(
-                      label: entry.value,
-                      color: _colorFor(entry.key),
-                      selected: isSelected,
-                      onTap: () => ref
-                          .read(orderListControllerProvider.notifier)
-                          .setStatus(isSelected ? null : entry.key),
-                    ),
-                  );
-                }).toList(),
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.sm,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    l10n.orders,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(width: AppSizes.sm),
+                  Text(
+                    '${state.orders.length}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w400,
+                        ),
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: AppSizes.md),
-          Expanded(child: _buildBody(context, ref, state, l10n)),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              child: SearchField(
+                hint: l10n.searchOrders,
+                onChanged: (q) => ref
+                    .read(orderListControllerProvider.notifier)
+                    .setQuery(q),
+              ),
+            ),
+            const SizedBox(height: AppSizes.md),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+              child: OrderStatusTabs(
+                selected: state.selectedStatus,
+                labels: tabLabels,
+                onSelected: (status) => ref
+                    .read(orderListControllerProvider.notifier)
+                    .setStatus(status),
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Expanded(child: _buildBody(context, ref, state, l10n)),
+          ],
+        ),
       ),
     );
-  }
-
-  Color _colorFor(OrderStatus? status) {
-    switch (status) {
-      case OrderStatus.draft:
-        return const Color(0xFF6B6B7B);
-      case OrderStatus.confirmed:
-        return const Color(0xFFFFC107);
-      case OrderStatus.done:
-        return const Color(0xFF28A745);
-      case null:
-        return const Color(0xFF714B67);
-    }
   }
 
   Widget _buildBody(
@@ -113,10 +120,20 @@ class OrderListScreen extends ConsumerWidget {
       onRefresh: () =>
           ref.read(orderListControllerProvider.notifier).refresh(),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.md,
+          0,
+          AppSizes.md,
+          AppSizes.xxl,
+        ),
         itemCount: state.orders.length,
-        itemBuilder: (context, index) =>
-            OrderCard(order: state.orders[index]),
+        itemBuilder: (context, index) {
+          final order = state.orders[index];
+          return OrderCard(
+            order: order,
+            onTap: () => context.push(AppRoutes.orderDetailFor(order.id)),
+          );
+        },
       ),
     );
   }

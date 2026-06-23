@@ -24,7 +24,7 @@ class QuickActions extends StatelessWidget {
         _CircleAction(
           icon: Icons.shopping_bag_outlined,
           label: l10n.newOrderAction,
-          onTap: () => context.go(AppRoutes.orders),
+          onTap: () => context.push(AppRoutes.createOrder),
         ),
         _CircleAction(
           icon: Icons.search,

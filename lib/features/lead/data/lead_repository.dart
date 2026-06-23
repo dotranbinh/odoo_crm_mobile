@@ -14,6 +14,7 @@ import '../../../core/odoo/odoo_form_schema_service.dart';
 import '../../../core/odoo/odoo_many2many_enricher.dart';
 import '../../../core/odoo/odoo_mock_schema_loader.dart';
 import '../../../core/odoo/odoo_record_reader.dart';
+import '../../order/domain/lead_quotation_context.dart';
 import '../domain/lead.dart';
 import '../domain/lead_detail_view_data.dart';
 import '../domain/lead_list_item.dart';
@@ -169,6 +170,60 @@ class LeadRepository {
     return fetchLeadById(id);
   }
 
+  static const _quotationLeadFields = <String>[
+    'id',
+    'type',
+    'name',
+    'partner_id',
+    'partner_name',
+    'contact_name',
+    'email_from',
+    'phone',
+    'street',
+    'city',
+    'country_id',
+    'user_id',
+    'team_id',
+    'company_id',
+    'source_id',
+    'medium_id',
+    'campaign_id',
+    'tag_ids',
+  ];
+
+  Future<LeadQuotationContext> fetchLeadForQuotation(int id) async {
+    if (!AppConfig.useRealApi) {
+      final lead = await fetchLeadById(id);
+      return LeadQuotationContext(
+        leadId: lead.id,
+        type: lead.recordType == LeadType.opportunity ? 'opportunity' : 'lead',
+        name: lead.title ?? lead.customerName,
+        partnerId: lead.partnerId,
+        partnerName: lead.customerName,
+        contactName: lead.contactName,
+        email: lead.email,
+        phone: lead.phone,
+        userId: lead.userId,
+        teamId: lead.teamId,
+      );
+    }
+
+    final rows = await _rpc.callKw(
+      model: crmLeadModel,
+      method: 'read',
+      args: [
+        [id],
+      ],
+      kwargs: {
+        'fields': _quotationLeadFields,
+      },
+    );
+    if (rows is! List || rows.isEmpty) {
+      throw StateError('Lead not found');
+    }
+    return LeadQuotationContext.fromOdoo(rows.first as Map<String, dynamic>);
+  }
+
   Future<Lead> convertToOpportunity(int id) async {
     if (!AppConfig.useRealApi) {
       final current = await fetchLeadById(id);
@@ -184,6 +239,37 @@ class LeadRepository {
       ],
     );
     return fetchLeadById(id);
+  }
+
+  Future<List<({int id, String name, double amount, String state})>>
+      fetchOrdersForLead(int leadId) async {
+    if (!AppConfig.useRealApi) return const [];
+
+    final rows = await _rpc.callKw(
+      model: 'sale.order',
+      method: 'search_read',
+      args: [
+        [
+          ['opportunity_id', '=', leadId],
+        ],
+      ],
+      kwargs: {
+        'fields': ['id', 'name', 'amount_total', 'state'],
+        'order': 'date_order desc',
+        'limit': 20,
+      },
+    );
+    if (rows is! List) return const [];
+    return [
+      for (final row in rows)
+        if (row is Map<String, dynamic>)
+          (
+            id: row['id'] as int,
+            name: row['name']?.toString() ?? '',
+            amount: (row['amount_total'] as num?)?.toDouble() ?? 0,
+            state: row['state']?.toString() ?? 'draft',
+          ),
+    ];
   }
 
   Future<List<({int id, String name})>> fetchLostReasons() async {

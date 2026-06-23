@@ -1,0 +1,12 @@
+# Variables are loaded from .env when present (see .env.example).
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ODOO_URL: ${ODOO_URL:-http://localhost:8069}
+        ODOO_DB: ${ODOO_DB:-dev1}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    restart: unless-stopped

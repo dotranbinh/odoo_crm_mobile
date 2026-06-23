@@ -8,8 +8,10 @@ import '../../../../core/widgets/section_header.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/lead_chatter_controller.dart';
 import '../../domain/mail_message.dart';
+import 'chatter_compose_sheet.dart';
+import 'lead_detail_action_button.dart';
 
-class LeadChatterCard extends ConsumerStatefulWidget {
+class LeadChatterCard extends ConsumerWidget {
   const LeadChatterCard({
     required this.leadId,
     super.key,
@@ -29,55 +31,26 @@ class LeadChatterCard extends ConsumerStatefulWidget {
   final IconData emptyIcon;
   final String? emptyText;
 
-  @override
-  ConsumerState<LeadChatterCard> createState() => _LeadChatterCardState();
-}
-
-class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
-  final _composerController = TextEditingController();
-  bool _posting = false;
-  bool _postAsLogNote = true;
-
-  @override
-  void dispose() {
-    _composerController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    final text = _composerController.text.trim();
-    if (text.isEmpty || _posting) return;
-
-    setState(() => _posting = true);
-    try {
-      final notifier =
-          ref.read(leadChatterControllerProvider(widget.leadId).notifier);
-      final ok = _postAsLogNote
-          ? await notifier.postLogNote(text)
-          : await notifier.postDiscussion(text);
-      if (ok && mounted) {
-        _composerController.clear();
-        FocusScope.of(context).unfocus();
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    } finally {
-      if (mounted) setState(() => _posting = false);
-    }
+  void _openComposer(BuildContext context, WidgetRef ref, {required bool asLogNote}) {
+    ChatterComposeSheet.show(
+      context,
+      leadId: leadId,
+      asLogNote: asLogNote,
+      onPosted: () => ref
+          .read(leadChatterControllerProvider(leadId).notifier)
+          .refresh(),
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final asyncMessages = ref.watch(leadChatterControllerProvider(widget.leadId));
+    final asyncMessages = ref.watch(leadChatterControllerProvider(leadId));
 
     final content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (widget.showHeader) ...[
+        if (showHeader) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(
               AppSizes.md,
@@ -88,6 +61,34 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
             child: SectionHeader(title: l10n.chatterAndNotes),
           ),
           const Divider(height: 1),
+        ],
+        if (showComposer) ...[
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppSizes.md,
+              showHeader ? AppSizes.sm : 0,
+              AppSizes.md,
+              AppSizes.md,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                LeadDetailActionButton(
+                  label: l10n.logNote,
+                  icon: Icons.sticky_note_2_outlined,
+                  onPressed: () =>
+                      _openComposer(context, ref, asLogNote: true),
+                ),
+                const SizedBox(height: AppSizes.sm),
+                LeadDetailActionButton(
+                  label: l10n.sendMessage,
+                  icon: Icons.chat_bubble_outline,
+                  onPressed: () =>
+                      _openComposer(context, ref, asLogNote: false),
+                ),
+              ],
+            ),
+          ),
         ],
         asyncMessages.when(
           loading: () => const Padding(
@@ -102,9 +103,7 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
                 const SizedBox(height: AppSizes.sm),
                 OutlinedButton(
                   onPressed: () => ref
-                      .read(
-                        leadChatterControllerProvider(widget.leadId).notifier,
-                      )
+                      .read(leadChatterControllerProvider(leadId).notifier)
                       .refresh(),
                   child: Text(l10n.retry),
                 ),
@@ -112,15 +111,13 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
             ),
           ),
           data: (messages) {
-            final visible = widget.kinds == null
+            final visible = kinds == null
                 ? messages
-                : messages
-                    .where((m) => widget.kinds!.contains(m.kind))
-                    .toList();
+                : messages.where((m) => kinds!.contains(m.kind)).toList();
             if (visible.isEmpty) {
               return _EmptyMessages(
-                icon: widget.emptyIcon,
-                text: widget.emptyText ?? l10n.noChatterMessages,
+                icon: emptyIcon,
+                text: emptyText ?? l10n.noChatterMessages,
               );
             }
             return ListView.separated(
@@ -133,73 +130,10 @@ class _LeadChatterCardState extends ConsumerState<LeadChatterCard> {
             );
           },
         ),
-        if (widget.showComposer) ...[
-          const Divider(height: 1),
-          Padding(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SegmentedButton<bool>(
-                  segments: [
-                    ButtonSegment(
-                      value: true,
-                      label: Text(l10n.logNote),
-                      icon: const Icon(Icons.sticky_note_2_outlined, size: 18),
-                    ),
-                    ButtonSegment(
-                      value: false,
-                      label: Text(l10n.sendMessage),
-                      icon: const Icon(Icons.chat_bubble_outline, size: 18),
-                    ),
-                  ],
-                  selected: {_postAsLogNote},
-                  onSelectionChanged: (values) {
-                    setState(() => _postAsLogNote = values.first);
-                  },
-                ),
-                const SizedBox(height: AppSizes.sm),
-                TextField(
-                  controller: _composerController,
-                  minLines: 2,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: _postAsLogNote
-                        ? l10n.logNoteHint
-                        : l10n.sendMessageHint,
-                    border: const OutlineInputBorder(),
-                  ),
-                  enabled: !_posting,
-                ),
-                const SizedBox(height: AppSizes.sm),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    onPressed: _posting ? null : _submit,
-                    icon: _posting
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(
-                            _postAsLogNote
-                                ? Icons.note_add_outlined
-                                : Icons.send_outlined,
-                          ),
-                    label: Text(
-                      _postAsLogNote ? l10n.addLogNote : l10n.sendMessage,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ],
     );
 
-    if (!widget.padded) return content;
+    if (!padded) return content;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(

@@ -165,5 +165,50 @@
   "infoTab": "Info",
   "notesTab": "Notes",
   "activityTab": "Activity",
-  "noNotesYet": "No notes yet"
+  "noNotesYet": "No notes yet",
+  "newQuotation": "New quotation",
+  "createQuotation": "Create quotation",
+  "orderLines": "Order lines",
+  "addLine": "Add line",
+  "product": "Product",
+  "quantity": "Quantity",
+  "unitPrice": "Unit price",
+  "subtotal": "Subtotal",
+  "total": "Total",
+  "customerRequired": "Customer is required",
+  "atLeastOneLine": "Add at least one order line",
+  "quotationInfo": "Quotation info",
+  "salesInfo": "Sales info",
+  "origin": "Origin",
+  "validityDate": "Validity date",
+  "clientOrderRef": "Customer reference",
+  "salesTeam": "Sales team",
+  "pricelist": "Pricelist",
+  "paymentTerm": "Payment terms",
+  "createCustomer": "Create customer",
+  "selectCustomer": "Select customer",
+  "searchProducts": "Search products…",
+  "searchCustomers": "Search customers…",
+  "sent": "Sent",
+  "sale": "Sales order",
+  "cancelled": "Cancelled",
+  "comingSoon": "Detail screen coming soon",
+  "quotationCreated": "Quotation {number} created",
+  "@quotationCreated": {
+    "placeholders": {
+      "number": { "type": "String" }
+    }
+  },
+  "orderDetailTitle": "Order details",
+  "editOrder": "Edit order",
+  "edit": "Edit",
+  "opportunity": "Opportunity",
+  "noOrderLines": "No order lines",
+  "orderUpdated": "Order {number} updated",
+  "@orderUpdated": {
+    "placeholders": {
+      "number": { "type": "String" }
+    }
+  },
+  "orderNotEditable": "This order cannot be edited"
 }

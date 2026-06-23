@@ -16,7 +16,10 @@ Tham chiếu thiết kế chung: [design.md](../../design.md) · Kiến trúc mo
 | Pipeline Kanban | `/leads/pipeline` | [lead-pipeline.md](lead-pipeline.md) | `lib/features/lead/presentation/lead_pipeline_screen.dart` |
 | Sửa Lead | `/leads/:id/edit` | [edit-lead.md](edit-lead.md) | `lib/features/lead/presentation/edit_lead_screen.dart` |
 | Tạo Lead | `/create-lead` | [create-lead.md](create-lead.md) | `lib/features/create_lead/presentation/create_lead_screen.dart` |
+| Tạo báo giá | `/create-order` | [create-quotation.md](create-quotation.md) | `lib/features/order/presentation/create_quotation_screen.dart` |
 | Danh sách Đơn hàng | `/orders` | [order-list.md](order-list.md) | `lib/features/order/presentation/order_list_screen.dart` |
+| Chi tiết Đơn hàng | `/orders/:id` | [order-detail.md](order-detail.md) | `lib/features/order/presentation/order_detail_screen.dart` |
+| Sửa Đơn hàng | `/orders/:id/edit` | [edit-order.md](edit-order.md) | `lib/features/order/presentation/edit_order_screen.dart` |
 | Hồ sơ | `/profile` | [profile.md](profile.md) | `lib/features/profile/presentation/profile_screen.dart` |
 | Cài đặt | `/settings` | [settings.md](settings.md) | `lib/features/settings/presentation/settings_screen.dart` |
 

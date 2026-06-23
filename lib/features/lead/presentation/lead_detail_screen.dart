@@ -86,27 +86,29 @@ class _LeadDetailBodyState extends ConsumerState<_LeadDetailBody> {
     ref.read(leadDetailControllerProvider(_lead.id).notifier).refresh();
   }
 
+  void _openScheduleActivity() {
+    ScheduleActivitySheet.show(
+      context,
+      leadId: _lead.id,
+      onScheduled: () => ref
+          .read(leadScheduledActivitiesControllerProvider(_lead.id).notifier)
+          .refresh(),
+    );
+  }
+
+  /// Extra scroll padding so content clears the shell bottom nav + center FAB.
+  double _scrollBottomPadding(BuildContext context) {
+    return AppSizes.bottomNavHeight +
+        MediaQuery.paddingOf(context).bottom +
+        AppSizes.lg;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final lead = _lead;
 
     return Scaffold(
-      floatingActionButton: _tab == _DetailTab.activity
-          ? FloatingActionButton(
-              onPressed: () => ScheduleActivitySheet.show(
-                context,
-                leadId: lead.id,
-                onScheduled: () => ref
-                    .read(
-                      leadScheduledActivitiesControllerProvider(lead.id)
-                          .notifier,
-                    )
-                    .refresh(),
-              ),
-              child: const Icon(Icons.add),
-            )
-          : null,
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
@@ -135,7 +137,7 @@ class _LeadDetailBodyState extends ConsumerState<_LeadDetailBody> {
               ),
               const SizedBox(height: AppSizes.md),
               _tabContent(lead, l10n),
-              const SizedBox(height: AppSizes.xxl),
+              SizedBox(height: _scrollBottomPadding(context)),
             ],
           ),
         ),
@@ -162,6 +164,7 @@ class _LeadDetailBodyState extends ConsumerState<_LeadDetailBody> {
         return LeadChatterCard(
           leadId: lead.id,
           showHeader: false,
+          padded: false,
           kinds: const {
             MailMessageKind.logNote,
             MailMessageKind.discussion,
@@ -174,6 +177,15 @@ class _LeadDetailBodyState extends ConsumerState<_LeadDetailBody> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.md,
+                0,
+                AppSizes.md,
+                AppSizes.md,
+              ),
+              child: ScheduleActivityButton(onPressed: _openScheduleActivity),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSizes.md,

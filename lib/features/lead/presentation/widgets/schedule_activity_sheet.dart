@@ -5,9 +5,28 @@ import '../../../../app/constants/app_sizes.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'lead_detail_action_button.dart';
 import '../../application/lead_scheduled_activities_controller.dart';
 import '../../data/lead_activity_repository.dart';
 import '../../domain/scheduled_activity.dart';
+
+/// Prominent inline CTA for scheduling — avoids FAB overlap with shell bottom nav.
+class ScheduleActivityButton extends StatelessWidget {
+  const ScheduleActivityButton({required this.onPressed, super.key});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return LeadDetailActionButton(
+      label: l10n.scheduleActivity,
+      icon: Icons.add,
+      onPressed: onPressed,
+    );
+  }
+}
 
 class ScheduleActivitySheet extends ConsumerStatefulWidget {
   const ScheduleActivitySheet({
@@ -191,10 +210,18 @@ class LeadScheduledActivitiesList extends ConsumerWidget {
 
     if (state.activities.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSizes.md,
+          0,
+          AppSizes.md,
+          AppSizes.sm,
+        ),
         child: Text(
           l10n.noScheduledActivities,
-          style: const TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
         ),
       );
     }

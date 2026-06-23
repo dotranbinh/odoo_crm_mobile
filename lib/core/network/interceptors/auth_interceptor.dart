@@ -25,8 +25,7 @@ class AuthInterceptor extends Interceptor {
     final cookie = session.cookie;
 
     if (kIsWeb) {
-      // Web: rely on BrowserHttpClientAdapter(withCredentials: true) to send
-      // HttpOnly cookies (odoo-session-cookie). Do NOT inject a wrong header.
+      // Web: external /jsonrpc — no cookies; see dio_web_adapter_web.dart.
       handler.next(options);
       return;
     }

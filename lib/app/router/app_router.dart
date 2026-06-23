@@ -11,6 +11,9 @@ import '../../features/lead/presentation/lead_pipeline_screen.dart';
 import '../../features/lead/presentation/edit_lead_screen.dart';
 import '../../features/lead/presentation/lead_detail_screen.dart';
 import '../../features/lead/presentation/lead_list_screen.dart';
+import '../../features/order/presentation/create_quotation_screen.dart';
+import '../../features/order/presentation/edit_order_screen.dart';
+import '../../features/order/presentation/order_detail_screen.dart';
 import '../../features/order/presentation/order_list_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
@@ -62,6 +65,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.createLead,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const CreateLeadScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.createOrder,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final leadIdStr = state.uri.queryParameters['leadId'];
+          final leadId = leadIdStr != null ? int.tryParse(leadIdStr) : null;
+          return CreateQuotationScreen(leadId: leadId);
+        },
       ),
       GoRoute(
         path: AppRoutes.settings,
@@ -123,6 +135,29 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.orders,
                 builder: (context, state) => const OrderListScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) {
+                      final id =
+                          int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+                      return OrderDetailScreen(orderId: id);
+                    },
+                    routes: [
+                      GoRoute(
+                        path: 'edit',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) {
+                          final id = int.tryParse(
+                                state.pathParameters['id'] ?? '',
+                              ) ??
+                              0;
+                          return EditOrderScreen(orderId: id);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

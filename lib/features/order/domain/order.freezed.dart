@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Order {
 
- int get id; String get number; String get customer; double get amount; String get currency; OrderStatus get status; DateTime get createdAt;
+ int get id; String get number; String get customer; double get amount; String get currency; OrderStatus get status; DateTime get createdAt; int? get partnerId; int? get opportunityId; String? get origin; DateTime? get validityDate; String? get note; int? get userId; int? get teamId; int? get pricelistId; int? get paymentTermId; String? get clientOrderRef; String? get salespersonName; String? get teamName; String? get pricelistName; String? get paymentTermName; String? get opportunityName; List<OrderLine> get lines;
 /// Create a copy of Order
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OrderCopyWith<Order> get copyWith => _$OrderCopyWithImpl<Order>(this as Order, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Order&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Order&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.partnerId, partnerId) || other.partnerId == partnerId)&&(identical(other.opportunityId, opportunityId) || other.opportunityId == opportunityId)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.validityDate, validityDate) || other.validityDate == validityDate)&&(identical(other.note, note) || other.note == note)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.pricelistId, pricelistId) || other.pricelistId == pricelistId)&&(identical(other.paymentTermId, paymentTermId) || other.paymentTermId == paymentTermId)&&(identical(other.clientOrderRef, clientOrderRef) || other.clientOrderRef == clientOrderRef)&&(identical(other.salespersonName, salespersonName) || other.salespersonName == salespersonName)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.pricelistName, pricelistName) || other.pricelistName == pricelistName)&&(identical(other.paymentTermName, paymentTermName) || other.paymentTermName == paymentTermName)&&(identical(other.opportunityName, opportunityName) || other.opportunityName == opportunityName)&&const DeepCollectionEquality().equals(other.lines, lines));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,number,customer,amount,currency,status,createdAt);
+int get hashCode => Object.hashAll([runtimeType,id,number,customer,amount,currency,status,createdAt,partnerId,opportunityId,origin,validityDate,note,userId,teamId,pricelistId,paymentTermId,clientOrderRef,salespersonName,teamName,pricelistName,paymentTermName,opportunityName,const DeepCollectionEquality().hash(lines)]);
 
 @override
 String toString() {
-  return 'Order(id: $id, number: $number, customer: $customer, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt)';
+  return 'Order(id: $id, number: $number, customer: $customer, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt, partnerId: $partnerId, opportunityId: $opportunityId, origin: $origin, validityDate: $validityDate, note: $note, userId: $userId, teamId: $teamId, pricelistId: $pricelistId, paymentTermId: $paymentTermId, clientOrderRef: $clientOrderRef, salespersonName: $salespersonName, teamName: $teamName, pricelistName: $pricelistName, paymentTermName: $paymentTermName, opportunityName: $opportunityName, lines: $lines)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OrderCopyWith<$Res>  {
   factory $OrderCopyWith(Order value, $Res Function(Order) _then) = _$OrderCopyWithImpl;
 @useResult
 $Res call({
- int id, String number, String customer, double amount, String currency, OrderStatus status, DateTime createdAt
+ int id, String number, String customer, double amount, String currency, OrderStatus status, DateTime createdAt, int? partnerId, int? opportunityId, String? origin, DateTime? validityDate, String? note, int? userId, int? teamId, int? pricelistId, int? paymentTermId, String? clientOrderRef, String? salespersonName, String? teamName, String? pricelistName, String? paymentTermName, String? opportunityName, List<OrderLine> lines
 });
 
 
@@ -65,7 +65,7 @@ class _$OrderCopyWithImpl<$Res>
 
 /// Create a copy of Order
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? number = null,Object? customer = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? number = null,Object? customer = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,Object? partnerId = freezed,Object? opportunityId = freezed,Object? origin = freezed,Object? validityDate = freezed,Object? note = freezed,Object? userId = freezed,Object? teamId = freezed,Object? pricelistId = freezed,Object? paymentTermId = freezed,Object? clientOrderRef = freezed,Object? salespersonName = freezed,Object? teamName = freezed,Object? pricelistName = freezed,Object? paymentTermName = freezed,Object? opportunityName = freezed,Object? lines = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -74,7 +74,23 @@ as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullabl
 as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as OrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,partnerId: freezed == partnerId ? _self.partnerId : partnerId // ignore: cast_nullable_to_non_nullable
+as int?,opportunityId: freezed == opportunityId ? _self.opportunityId : opportunityId // ignore: cast_nullable_to_non_nullable
+as int?,origin: freezed == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
+as String?,validityDate: freezed == validityDate ? _self.validityDate : validityDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int?,teamId: freezed == teamId ? _self.teamId : teamId // ignore: cast_nullable_to_non_nullable
+as int?,pricelistId: freezed == pricelistId ? _self.pricelistId : pricelistId // ignore: cast_nullable_to_non_nullable
+as int?,paymentTermId: freezed == paymentTermId ? _self.paymentTermId : paymentTermId // ignore: cast_nullable_to_non_nullable
+as int?,clientOrderRef: freezed == clientOrderRef ? _self.clientOrderRef : clientOrderRef // ignore: cast_nullable_to_non_nullable
+as String?,salespersonName: freezed == salespersonName ? _self.salespersonName : salespersonName // ignore: cast_nullable_to_non_nullable
+as String?,teamName: freezed == teamName ? _self.teamName : teamName // ignore: cast_nullable_to_non_nullable
+as String?,pricelistName: freezed == pricelistName ? _self.pricelistName : pricelistName // ignore: cast_nullable_to_non_nullable
+as String?,paymentTermName: freezed == paymentTermName ? _self.paymentTermName : paymentTermName // ignore: cast_nullable_to_non_nullable
+as String?,opportunityName: freezed == opportunityName ? _self.opportunityName : opportunityName // ignore: cast_nullable_to_non_nullable
+as String?,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
+as List<OrderLine>,
   ));
 }
 
@@ -159,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt,  int? partnerId,  int? opportunityId,  String? origin,  DateTime? validityDate,  String? note,  int? userId,  int? teamId,  int? pricelistId,  int? paymentTermId,  String? clientOrderRef,  String? salespersonName,  String? teamName,  String? pricelistName,  String? paymentTermName,  String? opportunityName,  List<OrderLine> lines)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Order() when $default != null:
-return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt,_that.partnerId,_that.opportunityId,_that.origin,_that.validityDate,_that.note,_that.userId,_that.teamId,_that.pricelistId,_that.paymentTermId,_that.clientOrderRef,_that.salespersonName,_that.teamName,_that.pricelistName,_that.paymentTermName,_that.opportunityName,_that.lines);case _:
   return orElse();
 
 }
@@ -180,10 +196,10 @@ return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt,  int? partnerId,  int? opportunityId,  String? origin,  DateTime? validityDate,  String? note,  int? userId,  int? teamId,  int? pricelistId,  int? paymentTermId,  String? clientOrderRef,  String? salespersonName,  String? teamName,  String? pricelistName,  String? paymentTermName,  String? opportunityName,  List<OrderLine> lines)  $default,) {final _that = this;
 switch (_that) {
 case _Order():
-return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt,_that.partnerId,_that.opportunityId,_that.origin,_that.validityDate,_that.note,_that.userId,_that.teamId,_that.pricelistId,_that.paymentTermId,_that.clientOrderRef,_that.salespersonName,_that.teamName,_that.pricelistName,_that.paymentTermName,_that.opportunityName,_that.lines);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +216,10 @@ return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String number,  String customer,  double amount,  String currency,  OrderStatus status,  DateTime createdAt,  int? partnerId,  int? opportunityId,  String? origin,  DateTime? validityDate,  String? note,  int? userId,  int? teamId,  int? pricelistId,  int? paymentTermId,  String? clientOrderRef,  String? salespersonName,  String? teamName,  String? pricelistName,  String? paymentTermName,  String? opportunityName,  List<OrderLine> lines)?  $default,) {final _that = this;
 switch (_that) {
 case _Order() when $default != null:
-return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency,_that.status,_that.createdAt,_that.partnerId,_that.opportunityId,_that.origin,_that.validityDate,_that.note,_that.userId,_that.teamId,_that.pricelistId,_that.paymentTermId,_that.clientOrderRef,_that.salespersonName,_that.teamName,_that.pricelistName,_that.paymentTermName,_that.opportunityName,_that.lines);case _:
   return null;
 
 }
@@ -215,7 +231,7 @@ return $default(_that.id,_that.number,_that.customer,_that.amount,_that.currency
 @JsonSerializable()
 
 class _Order implements Order {
-  const _Order({required this.id, required this.number, required this.customer, required this.amount, required this.currency, required this.status, required this.createdAt});
+  const _Order({required this.id, required this.number, required this.customer, required this.amount, required this.currency, required this.status, required this.createdAt, this.partnerId, this.opportunityId, this.origin, this.validityDate, this.note, this.userId, this.teamId, this.pricelistId, this.paymentTermId, this.clientOrderRef, this.salespersonName, this.teamName, this.pricelistName, this.paymentTermName, this.opportunityName, final  List<OrderLine> lines = const <OrderLine>[]}): _lines = lines;
   factory _Order.fromJson(Map<String, dynamic> json) => _$OrderFromJson(json);
 
 @override final  int id;
@@ -225,6 +241,28 @@ class _Order implements Order {
 @override final  String currency;
 @override final  OrderStatus status;
 @override final  DateTime createdAt;
+@override final  int? partnerId;
+@override final  int? opportunityId;
+@override final  String? origin;
+@override final  DateTime? validityDate;
+@override final  String? note;
+@override final  int? userId;
+@override final  int? teamId;
+@override final  int? pricelistId;
+@override final  int? paymentTermId;
+@override final  String? clientOrderRef;
+@override final  String? salespersonName;
+@override final  String? teamName;
+@override final  String? pricelistName;
+@override final  String? paymentTermName;
+@override final  String? opportunityName;
+ final  List<OrderLine> _lines;
+@override@JsonKey() List<OrderLine> get lines {
+  if (_lines is EqualUnmodifiableListView) return _lines;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lines);
+}
+
 
 /// Create a copy of Order
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +277,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Order&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Order&&(identical(other.id, id) || other.id == id)&&(identical(other.number, number) || other.number == number)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.partnerId, partnerId) || other.partnerId == partnerId)&&(identical(other.opportunityId, opportunityId) || other.opportunityId == opportunityId)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.validityDate, validityDate) || other.validityDate == validityDate)&&(identical(other.note, note) || other.note == note)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.teamId, teamId) || other.teamId == teamId)&&(identical(other.pricelistId, pricelistId) || other.pricelistId == pricelistId)&&(identical(other.paymentTermId, paymentTermId) || other.paymentTermId == paymentTermId)&&(identical(other.clientOrderRef, clientOrderRef) || other.clientOrderRef == clientOrderRef)&&(identical(other.salespersonName, salespersonName) || other.salespersonName == salespersonName)&&(identical(other.teamName, teamName) || other.teamName == teamName)&&(identical(other.pricelistName, pricelistName) || other.pricelistName == pricelistName)&&(identical(other.paymentTermName, paymentTermName) || other.paymentTermName == paymentTermName)&&(identical(other.opportunityName, opportunityName) || other.opportunityName == opportunityName)&&const DeepCollectionEquality().equals(other._lines, _lines));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,number,customer,amount,currency,status,createdAt);
+int get hashCode => Object.hashAll([runtimeType,id,number,customer,amount,currency,status,createdAt,partnerId,opportunityId,origin,validityDate,note,userId,teamId,pricelistId,paymentTermId,clientOrderRef,salespersonName,teamName,pricelistName,paymentTermName,opportunityName,const DeepCollectionEquality().hash(_lines)]);
 
 @override
 String toString() {
-  return 'Order(id: $id, number: $number, customer: $customer, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt)';
+  return 'Order(id: $id, number: $number, customer: $customer, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt, partnerId: $partnerId, opportunityId: $opportunityId, origin: $origin, validityDate: $validityDate, note: $note, userId: $userId, teamId: $teamId, pricelistId: $pricelistId, paymentTermId: $paymentTermId, clientOrderRef: $clientOrderRef, salespersonName: $salespersonName, teamName: $teamName, pricelistName: $pricelistName, paymentTermName: $paymentTermName, opportunityName: $opportunityName, lines: $lines)';
 }
 
 
@@ -259,7 +297,7 @@ abstract mixin class _$OrderCopyWith<$Res> implements $OrderCopyWith<$Res> {
   factory _$OrderCopyWith(_Order value, $Res Function(_Order) _then) = __$OrderCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String number, String customer, double amount, String currency, OrderStatus status, DateTime createdAt
+ int id, String number, String customer, double amount, String currency, OrderStatus status, DateTime createdAt, int? partnerId, int? opportunityId, String? origin, DateTime? validityDate, String? note, int? userId, int? teamId, int? pricelistId, int? paymentTermId, String? clientOrderRef, String? salespersonName, String? teamName, String? pricelistName, String? paymentTermName, String? opportunityName, List<OrderLine> lines
 });
 
 
@@ -276,7 +314,7 @@ class __$OrderCopyWithImpl<$Res>
 
 /// Create a copy of Order
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? number = null,Object? customer = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? number = null,Object? customer = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,Object? partnerId = freezed,Object? opportunityId = freezed,Object? origin = freezed,Object? validityDate = freezed,Object? note = freezed,Object? userId = freezed,Object? teamId = freezed,Object? pricelistId = freezed,Object? paymentTermId = freezed,Object? clientOrderRef = freezed,Object? salespersonName = freezed,Object? teamName = freezed,Object? pricelistName = freezed,Object? paymentTermName = freezed,Object? opportunityName = freezed,Object? lines = null,}) {
   return _then(_Order(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -285,7 +323,23 @@ as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullabl
 as double,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as OrderStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,partnerId: freezed == partnerId ? _self.partnerId : partnerId // ignore: cast_nullable_to_non_nullable
+as int?,opportunityId: freezed == opportunityId ? _self.opportunityId : opportunityId // ignore: cast_nullable_to_non_nullable
+as int?,origin: freezed == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
+as String?,validityDate: freezed == validityDate ? _self.validityDate : validityDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int?,teamId: freezed == teamId ? _self.teamId : teamId // ignore: cast_nullable_to_non_nullable
+as int?,pricelistId: freezed == pricelistId ? _self.pricelistId : pricelistId // ignore: cast_nullable_to_non_nullable
+as int?,paymentTermId: freezed == paymentTermId ? _self.paymentTermId : paymentTermId // ignore: cast_nullable_to_non_nullable
+as int?,clientOrderRef: freezed == clientOrderRef ? _self.clientOrderRef : clientOrderRef // ignore: cast_nullable_to_non_nullable
+as String?,salespersonName: freezed == salespersonName ? _self.salespersonName : salespersonName // ignore: cast_nullable_to_non_nullable
+as String?,teamName: freezed == teamName ? _self.teamName : teamName // ignore: cast_nullable_to_non_nullable
+as String?,pricelistName: freezed == pricelistName ? _self.pricelistName : pricelistName // ignore: cast_nullable_to_non_nullable
+as String?,paymentTermName: freezed == paymentTermName ? _self.paymentTermName : paymentTermName // ignore: cast_nullable_to_non_nullable
+as String?,opportunityName: freezed == opportunityName ? _self.opportunityName : opportunityName // ignore: cast_nullable_to_non_nullable
+as String?,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
+as List<OrderLine>,
   ));
 }
 

@@ -583,7 +583,7 @@ abstract class AppLocalizations {
   /// No description provided for @salesInfo.
   ///
   /// In en, this message translates to:
-  /// **'Sales information'**
+  /// **'Sales info'**
   String get salesInfo;
 
   /// No description provided for @description.
@@ -963,6 +963,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No notes yet'**
   String get noNotesYet;
+
+  /// No description provided for @newQuotation.
+  ///
+  /// In en, this message translates to:
+  /// **'New quotation'**
+  String get newQuotation;
+
+  /// No description provided for @createQuotation.
+  ///
+  /// In en, this message translates to:
+  /// **'Create quotation'**
+  String get createQuotation;
+
+  /// No description provided for @orderLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Order lines'**
+  String get orderLines;
+
+  /// No description provided for @addLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add line'**
+  String get addLine;
+
+  /// No description provided for @product.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get product;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get unitPrice;
+
+  /// No description provided for @subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @customerRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer is required'**
+  String get customerRequired;
+
+  /// No description provided for @atLeastOneLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one order line'**
+  String get atLeastOneLine;
+
+  /// No description provided for @quotationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotation info'**
+  String get quotationInfo;
+
+  /// No description provided for @origin.
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get origin;
+
+  /// No description provided for @validityDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Validity date'**
+  String get validityDate;
+
+  /// No description provided for @clientOrderRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer reference'**
+  String get clientOrderRef;
+
+  /// No description provided for @salesTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales team'**
+  String get salesTeam;
+
+  /// No description provided for @pricelist.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricelist'**
+  String get pricelist;
+
+  /// No description provided for @paymentTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment terms'**
+  String get paymentTerm;
+
+  /// No description provided for @createCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Create customer'**
+  String get createCustomer;
+
+  /// No description provided for @selectCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select customer'**
+  String get selectCustomer;
+
+  /// No description provided for @searchProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search products…'**
+  String get searchProducts;
+
+  /// No description provided for @searchCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search customers…'**
+  String get searchCustomers;
+
+  /// No description provided for @sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get sent;
+
+  /// No description provided for @sale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales order'**
+  String get sale;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Detail screen coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @quotationCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotation {number} created'**
+  String quotationCreated(String number);
+
+  /// No description provided for @orderDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order details'**
+  String get orderDetailTitle;
+
+  /// No description provided for @editOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit order'**
+  String get editOrder;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @opportunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Opportunity'**
+  String get opportunity;
+
+  /// No description provided for @noOrderLines.
+  ///
+  /// In en, this message translates to:
+  /// **'No order lines'**
+  String get noOrderLines;
+
+  /// No description provided for @orderUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Order {number} updated'**
+  String orderUpdated(String number);
+
+  /// No description provided for @orderNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'This order cannot be edited'**
+  String get orderNotEditable;
 }
 
 class _AppLocalizationsDelegate

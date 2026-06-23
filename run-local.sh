@@ -12,6 +12,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 ODOO_URL="${ODOO_URL:-http://localhost:8069}"
 ODOO_DB="${ODOO_DB:-dev1}"
 CHROME_USER_DATA_DIR="${CHROME_USER_DATA_DIR:-/tmp/chrome_cors_dev}"
